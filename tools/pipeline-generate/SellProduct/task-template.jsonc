@@ -263,6 +263,11 @@
                     "name": "Auto",
                     "label": "$task.SellProduct.OperatorSelectionModeAuto",
                     "pipeline_override": {
+                        "SellProduct${RegionPrefix}Sell": {
+                            "anchor": {
+                                "SellProduct${RegionPrefix}PrepareOperatorCache": "SellProduct${RegionPrefix}PrepareOperatorCache"
+                            }
+                        },
                         "SellProduct${LocationId}SetAfterSellOperatorAnchor": {
                             "anchor": {
                                 "SellProductAfterSellOperator": "SellProduct${LocationId}AfterSellOperator"
@@ -273,10 +278,16 @@
                                 "SellProduct${LocationId}OpenTargetOperatorList"
                             ]
                         },
+                        "SellProduct${LocationId}OpenTargetOperatorList": {
+                            "next": [
+                                "SellProduct${LocationId}InTargetOperatorList"
+                            ]
+                        },
                         "SellProduct${LocationId}InTargetOperatorList": {
                             "next": [
                                 "SellProduct${LocationId}AutoSelectTargetOperator",
-                                "SellProduct${LocationId}TargetOperatorNotFound"
+                                "SellProduct${LocationId}AutoTargetOperatorNotFoundAtBottom",
+                                "SellProduct${LocationId}AutoSwipeTargetOperatorList"
                             ]
                         },
                         "SellProduct${LocationId}AfterSellOperator": {
@@ -284,10 +295,16 @@
                                 "SellProduct${LocationId}OpenRestoreOperatorList"
                             ]
                         },
+                        "SellProduct${LocationId}OpenRestoreOperatorList": {
+                            "next": [
+                                "SellProduct${LocationId}InRestoreOperatorList"
+                            ]
+                        },
                         "SellProduct${LocationId}InRestoreOperatorList": {
                             "next": [
                                 "SellProduct${LocationId}AutoSelectRestoreOperator",
-                                "SellProduct${LocationId}AutoRestoreOperatorNotFound"
+                                "SellProduct${LocationId}AutoRestoreOperatorNotFoundAtBottom",
+                                "SellProduct${LocationId}AutoSwipeRestoreOperatorList"
                             ]
                         }
                     }
@@ -307,6 +324,11 @@
                                 "SellProduct${LocationId}OpenTargetOperatorList"
                             ]
                         },
+                        "SellProduct${LocationId}OpenTargetOperatorList": {
+                            "next": [
+                                "SellProduct${LocationId}InTargetOperatorList"
+                            ]
+                        },
                         "SellProduct${LocationId}InTargetOperatorList": {
                             "next": [
                                 "SellProduct${LocationId}SelectTargetOperator",
@@ -318,6 +340,11 @@
                             "next": [
                                 "SellProduct${LocationId}CurrentRestoreOperator",
                                 "SellProduct${LocationId}OpenRestoreOperatorList"
+                            ]
+                        },
+                        "SellProduct${LocationId}OpenRestoreOperatorList": {
+                            "next": [
+                                "SellProduct${LocationId}InRestoreOperatorList"
                             ]
                         },
                         "SellProduct${LocationId}InRestoreOperatorList": {

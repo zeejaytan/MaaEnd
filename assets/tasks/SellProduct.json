@@ -130,8 +130,35 @@
                     "name": "Refresh",
                     "label": "$task.SellProduct.OperatorDataSourceRefresh",
                     "pipeline_override": {
+                        "SellProductOperatorCacheReady": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "all",
+                                "location": "global",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
+                            }
+                        },
+                        "SellProductOperatorListScanDone": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "all",
+                                "location": "global",
+                                "result": "scan_done",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
+                            }
+                        },
                         "SellProductRefugeeCampAutoSelectTargetOperator": {
-                            "custom_action_param": {
+                            "custom_recognition_param": {
                                 "mode": "refresh",
                                 "usage": "target",
                                 "location": "RefugeeCamp",
@@ -140,12 +167,11 @@
                                     121,
                                     700,
                                     430
-                                ],
-                                "max_swipes": 8
+                                ]
                             }
                         },
                         "SellProductRefugeeCampAutoSelectRestoreOperator": {
-                            "custom_action_param": {
+                            "custom_recognition_param": {
                                 "mode": "refresh",
                                 "usage": "restore",
                                 "location": "RefugeeCamp",
@@ -154,12 +180,39 @@
                                     121,
                                     700,
                                     430
-                                ],
-                                "max_swipes": 8
+                                ]
+                            }
+                        },
+                        "SellProductRefugeeCampAutoTargetOperatorNotFoundAtBottom": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "target",
+                                "location": "RefugeeCamp",
+                                "result": "not_found",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
+                            }
+                        },
+                        "SellProductRefugeeCampAutoRestoreOperatorNotFoundAtBottom": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "restore",
+                                "location": "RefugeeCamp",
+                                "result": "not_found",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
                             }
                         },
                         "SellProductInfrastructureOutpostAutoSelectTargetOperator": {
-                            "custom_action_param": {
+                            "custom_recognition_param": {
                                 "mode": "refresh",
                                 "usage": "target",
                                 "location": "InfrastructureOutpost",
@@ -168,12 +221,11 @@
                                     121,
                                     700,
                                     430
-                                ],
-                                "max_swipes": 8
+                                ]
                             }
                         },
                         "SellProductInfrastructureOutpostAutoSelectRestoreOperator": {
-                            "custom_action_param": {
+                            "custom_recognition_param": {
                                 "mode": "refresh",
                                 "usage": "restore",
                                 "location": "InfrastructureOutpost",
@@ -182,12 +234,39 @@
                                     121,
                                     700,
                                     430
-                                ],
-                                "max_swipes": 8
+                                ]
+                            }
+                        },
+                        "SellProductInfrastructureOutpostAutoTargetOperatorNotFoundAtBottom": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "target",
+                                "location": "InfrastructureOutpost",
+                                "result": "not_found",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
+                            }
+                        },
+                        "SellProductInfrastructureOutpostAutoRestoreOperatorNotFoundAtBottom": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "restore",
+                                "location": "InfrastructureOutpost",
+                                "result": "not_found",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
                             }
                         },
                         "SellProductReconstructionCommandAutoSelectTargetOperator": {
-                            "custom_action_param": {
+                            "custom_recognition_param": {
                                 "mode": "refresh",
                                 "usage": "target",
                                 "location": "ReconstructionCommand",
@@ -196,12 +275,11 @@
                                     121,
                                     700,
                                     430
-                                ],
-                                "max_swipes": 8
+                                ]
                             }
                         },
                         "SellProductReconstructionCommandAutoSelectRestoreOperator": {
-                            "custom_action_param": {
+                            "custom_recognition_param": {
                                 "mode": "refresh",
                                 "usage": "restore",
                                 "location": "ReconstructionCommand",
@@ -210,12 +288,39 @@
                                     121,
                                     700,
                                     430
-                                ],
-                                "max_swipes": 8
+                                ]
+                            }
+                        },
+                        "SellProductReconstructionCommandAutoTargetOperatorNotFoundAtBottom": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "target",
+                                "location": "ReconstructionCommand",
+                                "result": "not_found",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
+                            }
+                        },
+                        "SellProductReconstructionCommandAutoRestoreOperatorNotFoundAtBottom": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "restore",
+                                "location": "ReconstructionCommand",
+                                "result": "not_found",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
                             }
                         },
                         "SellProductSkyKingFlatsAutoSelectTargetOperator": {
-                            "custom_action_param": {
+                            "custom_recognition_param": {
                                 "mode": "refresh",
                                 "usage": "target",
                                 "location": "SkyKingFlats",
@@ -224,12 +329,11 @@
                                     121,
                                     700,
                                     430
-                                ],
-                                "max_swipes": 8
+                                ]
                             }
                         },
                         "SellProductSkyKingFlatsAutoSelectRestoreOperator": {
-                            "custom_action_param": {
+                            "custom_recognition_param": {
                                 "mode": "refresh",
                                 "usage": "restore",
                                 "location": "SkyKingFlats",
@@ -238,12 +342,39 @@
                                     121,
                                     700,
                                     430
-                                ],
-                                "max_swipes": 8
+                                ]
+                            }
+                        },
+                        "SellProductSkyKingFlatsAutoTargetOperatorNotFoundAtBottom": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "target",
+                                "location": "SkyKingFlats",
+                                "result": "not_found",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
+                            }
+                        },
+                        "SellProductSkyKingFlatsAutoRestoreOperatorNotFoundAtBottom": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "restore",
+                                "location": "SkyKingFlats",
+                                "result": "not_found",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
                             }
                         },
                         "SellProductCardiacRemediationStationAutoSelectTargetOperator": {
-                            "custom_action_param": {
+                            "custom_recognition_param": {
                                 "mode": "refresh",
                                 "usage": "target",
                                 "location": "CardiacRemediationStation",
@@ -252,12 +383,11 @@
                                     121,
                                     700,
                                     430
-                                ],
-                                "max_swipes": 8
+                                ]
                             }
                         },
                         "SellProductCardiacRemediationStationAutoSelectRestoreOperator": {
-                            "custom_action_param": {
+                            "custom_recognition_param": {
                                 "mode": "refresh",
                                 "usage": "restore",
                                 "location": "CardiacRemediationStation",
@@ -266,8 +396,35 @@
                                     121,
                                     700,
                                     430
-                                ],
-                                "max_swipes": 8
+                                ]
+                            }
+                        },
+                        "SellProductCardiacRemediationStationAutoTargetOperatorNotFoundAtBottom": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "target",
+                                "location": "CardiacRemediationStation",
+                                "result": "not_found",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
+                            }
+                        },
+                        "SellProductCardiacRemediationStationAutoRestoreOperatorNotFoundAtBottom": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "restore",
+                                "location": "CardiacRemediationStation",
+                                "result": "not_found",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
                             }
                         }
                     }
@@ -415,6 +572,11 @@
                     "name": "Auto",
                     "label": "$task.SellProduct.OperatorSelectionModeAuto",
                     "pipeline_override": {
+                        "SellProductValleyIVSell": {
+                            "anchor": {
+                                "SellProductValleyIVPrepareOperatorCache": "SellProductValleyIVPrepareOperatorCache"
+                            }
+                        },
                         "SellProductRefugeeCampSetAfterSellOperatorAnchor": {
                             "anchor": {
                                 "SellProductAfterSellOperator": "SellProductRefugeeCampAfterSellOperator"
@@ -425,10 +587,16 @@
                                 "SellProductRefugeeCampOpenTargetOperatorList"
                             ]
                         },
+                        "SellProductRefugeeCampOpenTargetOperatorList": {
+                            "next": [
+                                "SellProductRefugeeCampInTargetOperatorList"
+                            ]
+                        },
                         "SellProductRefugeeCampInTargetOperatorList": {
                             "next": [
                                 "SellProductRefugeeCampAutoSelectTargetOperator",
-                                "SellProductRefugeeCampTargetOperatorNotFound"
+                                "SellProductRefugeeCampAutoTargetOperatorNotFoundAtBottom",
+                                "SellProductRefugeeCampAutoSwipeTargetOperatorList"
                             ]
                         },
                         "SellProductRefugeeCampAfterSellOperator": {
@@ -436,10 +604,16 @@
                                 "SellProductRefugeeCampOpenRestoreOperatorList"
                             ]
                         },
+                        "SellProductRefugeeCampOpenRestoreOperatorList": {
+                            "next": [
+                                "SellProductRefugeeCampInRestoreOperatorList"
+                            ]
+                        },
                         "SellProductRefugeeCampInRestoreOperatorList": {
                             "next": [
                                 "SellProductRefugeeCampAutoSelectRestoreOperator",
-                                "SellProductRefugeeCampAutoRestoreOperatorNotFound"
+                                "SellProductRefugeeCampAutoRestoreOperatorNotFoundAtBottom",
+                                "SellProductRefugeeCampAutoSwipeRestoreOperatorList"
                             ]
                         }
                     }
@@ -459,6 +633,11 @@
                                 "SellProductRefugeeCampOpenTargetOperatorList"
                             ]
                         },
+                        "SellProductRefugeeCampOpenTargetOperatorList": {
+                            "next": [
+                                "SellProductRefugeeCampInTargetOperatorList"
+                            ]
+                        },
                         "SellProductRefugeeCampInTargetOperatorList": {
                             "next": [
                                 "SellProductRefugeeCampSelectTargetOperator",
@@ -470,6 +649,11 @@
                             "next": [
                                 "SellProductRefugeeCampCurrentRestoreOperator",
                                 "SellProductRefugeeCampOpenRestoreOperatorList"
+                            ]
+                        },
+                        "SellProductRefugeeCampOpenRestoreOperatorList": {
+                            "next": [
+                                "SellProductRefugeeCampInRestoreOperatorList"
                             ]
                         },
                         "SellProductRefugeeCampInRestoreOperatorList": {
@@ -2242,6 +2426,11 @@
                     "name": "Auto",
                     "label": "$task.SellProduct.OperatorSelectionModeAuto",
                     "pipeline_override": {
+                        "SellProductValleyIVSell": {
+                            "anchor": {
+                                "SellProductValleyIVPrepareOperatorCache": "SellProductValleyIVPrepareOperatorCache"
+                            }
+                        },
                         "SellProductInfrastructureOutpostSetAfterSellOperatorAnchor": {
                             "anchor": {
                                 "SellProductAfterSellOperator": "SellProductInfrastructureOutpostAfterSellOperator"
@@ -2252,10 +2441,16 @@
                                 "SellProductInfrastructureOutpostOpenTargetOperatorList"
                             ]
                         },
+                        "SellProductInfrastructureOutpostOpenTargetOperatorList": {
+                            "next": [
+                                "SellProductInfrastructureOutpostInTargetOperatorList"
+                            ]
+                        },
                         "SellProductInfrastructureOutpostInTargetOperatorList": {
                             "next": [
                                 "SellProductInfrastructureOutpostAutoSelectTargetOperator",
-                                "SellProductInfrastructureOutpostTargetOperatorNotFound"
+                                "SellProductInfrastructureOutpostAutoTargetOperatorNotFoundAtBottom",
+                                "SellProductInfrastructureOutpostAutoSwipeTargetOperatorList"
                             ]
                         },
                         "SellProductInfrastructureOutpostAfterSellOperator": {
@@ -2263,10 +2458,16 @@
                                 "SellProductInfrastructureOutpostOpenRestoreOperatorList"
                             ]
                         },
+                        "SellProductInfrastructureOutpostOpenRestoreOperatorList": {
+                            "next": [
+                                "SellProductInfrastructureOutpostInRestoreOperatorList"
+                            ]
+                        },
                         "SellProductInfrastructureOutpostInRestoreOperatorList": {
                             "next": [
                                 "SellProductInfrastructureOutpostAutoSelectRestoreOperator",
-                                "SellProductInfrastructureOutpostAutoRestoreOperatorNotFound"
+                                "SellProductInfrastructureOutpostAutoRestoreOperatorNotFoundAtBottom",
+                                "SellProductInfrastructureOutpostAutoSwipeRestoreOperatorList"
                             ]
                         }
                     }
@@ -2286,6 +2487,11 @@
                                 "SellProductInfrastructureOutpostOpenTargetOperatorList"
                             ]
                         },
+                        "SellProductInfrastructureOutpostOpenTargetOperatorList": {
+                            "next": [
+                                "SellProductInfrastructureOutpostInTargetOperatorList"
+                            ]
+                        },
                         "SellProductInfrastructureOutpostInTargetOperatorList": {
                             "next": [
                                 "SellProductInfrastructureOutpostSelectTargetOperator",
@@ -2297,6 +2503,11 @@
                             "next": [
                                 "SellProductInfrastructureOutpostCurrentRestoreOperator",
                                 "SellProductInfrastructureOutpostOpenRestoreOperatorList"
+                            ]
+                        },
+                        "SellProductInfrastructureOutpostOpenRestoreOperatorList": {
+                            "next": [
+                                "SellProductInfrastructureOutpostInRestoreOperatorList"
                             ]
                         },
                         "SellProductInfrastructureOutpostInRestoreOperatorList": {
@@ -3932,6 +4143,11 @@
                     "name": "Auto",
                     "label": "$task.SellProduct.OperatorSelectionModeAuto",
                     "pipeline_override": {
+                        "SellProductValleyIVSell": {
+                            "anchor": {
+                                "SellProductValleyIVPrepareOperatorCache": "SellProductValleyIVPrepareOperatorCache"
+                            }
+                        },
                         "SellProductReconstructionCommandSetAfterSellOperatorAnchor": {
                             "anchor": {
                                 "SellProductAfterSellOperator": "SellProductReconstructionCommandAfterSellOperator"
@@ -3942,10 +4158,16 @@
                                 "SellProductReconstructionCommandOpenTargetOperatorList"
                             ]
                         },
+                        "SellProductReconstructionCommandOpenTargetOperatorList": {
+                            "next": [
+                                "SellProductReconstructionCommandInTargetOperatorList"
+                            ]
+                        },
                         "SellProductReconstructionCommandInTargetOperatorList": {
                             "next": [
                                 "SellProductReconstructionCommandAutoSelectTargetOperator",
-                                "SellProductReconstructionCommandTargetOperatorNotFound"
+                                "SellProductReconstructionCommandAutoTargetOperatorNotFoundAtBottom",
+                                "SellProductReconstructionCommandAutoSwipeTargetOperatorList"
                             ]
                         },
                         "SellProductReconstructionCommandAfterSellOperator": {
@@ -3953,10 +4175,16 @@
                                 "SellProductReconstructionCommandOpenRestoreOperatorList"
                             ]
                         },
+                        "SellProductReconstructionCommandOpenRestoreOperatorList": {
+                            "next": [
+                                "SellProductReconstructionCommandInRestoreOperatorList"
+                            ]
+                        },
                         "SellProductReconstructionCommandInRestoreOperatorList": {
                             "next": [
                                 "SellProductReconstructionCommandAutoSelectRestoreOperator",
-                                "SellProductReconstructionCommandAutoRestoreOperatorNotFound"
+                                "SellProductReconstructionCommandAutoRestoreOperatorNotFoundAtBottom",
+                                "SellProductReconstructionCommandAutoSwipeRestoreOperatorList"
                             ]
                         }
                     }
@@ -3976,6 +4204,11 @@
                                 "SellProductReconstructionCommandOpenTargetOperatorList"
                             ]
                         },
+                        "SellProductReconstructionCommandOpenTargetOperatorList": {
+                            "next": [
+                                "SellProductReconstructionCommandInTargetOperatorList"
+                            ]
+                        },
                         "SellProductReconstructionCommandInTargetOperatorList": {
                             "next": [
                                 "SellProductReconstructionCommandSelectTargetOperator",
@@ -3987,6 +4220,11 @@
                             "next": [
                                 "SellProductReconstructionCommandCurrentRestoreOperator",
                                 "SellProductReconstructionCommandOpenRestoreOperatorList"
+                            ]
+                        },
+                        "SellProductReconstructionCommandOpenRestoreOperatorList": {
+                            "next": [
+                                "SellProductReconstructionCommandInRestoreOperatorList"
                             ]
                         },
                         "SellProductReconstructionCommandInRestoreOperatorList": {
@@ -5473,6 +5711,11 @@
                     "name": "Auto",
                     "label": "$task.SellProduct.OperatorSelectionModeAuto",
                     "pipeline_override": {
+                        "SellProductWulingSell": {
+                            "anchor": {
+                                "SellProductWulingPrepareOperatorCache": "SellProductWulingPrepareOperatorCache"
+                            }
+                        },
                         "SellProductSkyKingFlatsSetAfterSellOperatorAnchor": {
                             "anchor": {
                                 "SellProductAfterSellOperator": "SellProductSkyKingFlatsAfterSellOperator"
@@ -5483,10 +5726,16 @@
                                 "SellProductSkyKingFlatsOpenTargetOperatorList"
                             ]
                         },
+                        "SellProductSkyKingFlatsOpenTargetOperatorList": {
+                            "next": [
+                                "SellProductSkyKingFlatsInTargetOperatorList"
+                            ]
+                        },
                         "SellProductSkyKingFlatsInTargetOperatorList": {
                             "next": [
                                 "SellProductSkyKingFlatsAutoSelectTargetOperator",
-                                "SellProductSkyKingFlatsTargetOperatorNotFound"
+                                "SellProductSkyKingFlatsAutoTargetOperatorNotFoundAtBottom",
+                                "SellProductSkyKingFlatsAutoSwipeTargetOperatorList"
                             ]
                         },
                         "SellProductSkyKingFlatsAfterSellOperator": {
@@ -5494,10 +5743,16 @@
                                 "SellProductSkyKingFlatsOpenRestoreOperatorList"
                             ]
                         },
+                        "SellProductSkyKingFlatsOpenRestoreOperatorList": {
+                            "next": [
+                                "SellProductSkyKingFlatsInRestoreOperatorList"
+                            ]
+                        },
                         "SellProductSkyKingFlatsInRestoreOperatorList": {
                             "next": [
                                 "SellProductSkyKingFlatsAutoSelectRestoreOperator",
-                                "SellProductSkyKingFlatsAutoRestoreOperatorNotFound"
+                                "SellProductSkyKingFlatsAutoRestoreOperatorNotFoundAtBottom",
+                                "SellProductSkyKingFlatsAutoSwipeRestoreOperatorList"
                             ]
                         }
                     }
@@ -5517,6 +5772,11 @@
                                 "SellProductSkyKingFlatsOpenTargetOperatorList"
                             ]
                         },
+                        "SellProductSkyKingFlatsOpenTargetOperatorList": {
+                            "next": [
+                                "SellProductSkyKingFlatsInTargetOperatorList"
+                            ]
+                        },
                         "SellProductSkyKingFlatsInTargetOperatorList": {
                             "next": [
                                 "SellProductSkyKingFlatsSelectTargetOperator",
@@ -5528,6 +5788,11 @@
                             "next": [
                                 "SellProductSkyKingFlatsCurrentRestoreOperator",
                                 "SellProductSkyKingFlatsOpenRestoreOperatorList"
+                            ]
+                        },
+                        "SellProductSkyKingFlatsOpenRestoreOperatorList": {
+                            "next": [
+                                "SellProductSkyKingFlatsInRestoreOperatorList"
                             ]
                         },
                         "SellProductSkyKingFlatsInRestoreOperatorList": {
@@ -7218,6 +7483,11 @@
                     "name": "Auto",
                     "label": "$task.SellProduct.OperatorSelectionModeAuto",
                     "pipeline_override": {
+                        "SellProductWulingSell": {
+                            "anchor": {
+                                "SellProductWulingPrepareOperatorCache": "SellProductWulingPrepareOperatorCache"
+                            }
+                        },
                         "SellProductCardiacRemediationStationSetAfterSellOperatorAnchor": {
                             "anchor": {
                                 "SellProductAfterSellOperator": "SellProductCardiacRemediationStationAfterSellOperator"
@@ -7228,10 +7498,16 @@
                                 "SellProductCardiacRemediationStationOpenTargetOperatorList"
                             ]
                         },
+                        "SellProductCardiacRemediationStationOpenTargetOperatorList": {
+                            "next": [
+                                "SellProductCardiacRemediationStationInTargetOperatorList"
+                            ]
+                        },
                         "SellProductCardiacRemediationStationInTargetOperatorList": {
                             "next": [
                                 "SellProductCardiacRemediationStationAutoSelectTargetOperator",
-                                "SellProductCardiacRemediationStationTargetOperatorNotFound"
+                                "SellProductCardiacRemediationStationAutoTargetOperatorNotFoundAtBottom",
+                                "SellProductCardiacRemediationStationAutoSwipeTargetOperatorList"
                             ]
                         },
                         "SellProductCardiacRemediationStationAfterSellOperator": {
@@ -7239,10 +7515,16 @@
                                 "SellProductCardiacRemediationStationOpenRestoreOperatorList"
                             ]
                         },
+                        "SellProductCardiacRemediationStationOpenRestoreOperatorList": {
+                            "next": [
+                                "SellProductCardiacRemediationStationInRestoreOperatorList"
+                            ]
+                        },
                         "SellProductCardiacRemediationStationInRestoreOperatorList": {
                             "next": [
                                 "SellProductCardiacRemediationStationAutoSelectRestoreOperator",
-                                "SellProductCardiacRemediationStationAutoRestoreOperatorNotFound"
+                                "SellProductCardiacRemediationStationAutoRestoreOperatorNotFoundAtBottom",
+                                "SellProductCardiacRemediationStationAutoSwipeRestoreOperatorList"
                             ]
                         }
                     }
@@ -7262,6 +7544,11 @@
                                 "SellProductCardiacRemediationStationOpenTargetOperatorList"
                             ]
                         },
+                        "SellProductCardiacRemediationStationOpenTargetOperatorList": {
+                            "next": [
+                                "SellProductCardiacRemediationStationInTargetOperatorList"
+                            ]
+                        },
                         "SellProductCardiacRemediationStationInTargetOperatorList": {
                             "next": [
                                 "SellProductCardiacRemediationStationSelectTargetOperator",
@@ -7273,6 +7560,11 @@
                             "next": [
                                 "SellProductCardiacRemediationStationCurrentRestoreOperator",
                                 "SellProductCardiacRemediationStationOpenRestoreOperatorList"
+                            ]
+                        },
+                        "SellProductCardiacRemediationStationOpenRestoreOperatorList": {
+                            "next": [
+                                "SellProductCardiacRemediationStationInRestoreOperatorList"
                             ]
                         },
                         "SellProductCardiacRemediationStationInRestoreOperatorList": {

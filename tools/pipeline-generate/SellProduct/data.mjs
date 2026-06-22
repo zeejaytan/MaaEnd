@@ -141,19 +141,19 @@ function filterOperatorCaseEntries(operatorNames) {
     return OPERATOR_CASE_ENTRIES.filter((entry) => operatorNames.has(entry.name));
 }
 
-// 构造 SellProductSelectBestOperator 的完整参数，供默认节点和强制刷新覆盖复用。
-function buildOperatorSelectActionParam(usage, location, mode = "cache") {
+// 构造自动干员 CustomRecognition 的完整参数，供默认节点和强制刷新覆盖复用。
+function buildOperatorRecognitionParam(usage, location, mode = "cache", result = undefined) {
     return {
         mode,
         usage,
         location,
+        ...(result ? {result} : {}),
         roi: [
             164,
             121,
             700,
             430,
         ],
-        max_swipes: 8,
     };
 }
 
@@ -458,13 +458,26 @@ function buildRestoreOperatorCases(nodePrefix, operatorNames) {
 
 // 生成全局「拥有干员刷新方式」选项；强制刷新 case 覆盖完整参数，避免浅合并丢失候选列表。
 function buildOperatorRefreshModeCases(locations) {
-    const refreshOverride = {};
+    const refreshOverride = {
+        SellProductOperatorCacheReady: {
+            custom_recognition_param: buildOperatorRecognitionParam("all", "global", "refresh"),
+        },
+        SellProductOperatorListScanDone: {
+            custom_recognition_param: buildOperatorRecognitionParam("all", "global", "refresh", "scan_done"),
+        },
+    };
     for (const loc of locations) {
         refreshOverride[`SellProduct${loc.LocationId}AutoSelectTargetOperator`] = {
-            custom_action_param: buildOperatorSelectActionParam("target", loc.LocationId, "refresh"),
+            custom_recognition_param: buildOperatorRecognitionParam("target", loc.LocationId, "refresh"),
         };
         refreshOverride[`SellProduct${loc.LocationId}AutoSelectRestoreOperator`] = {
-            custom_action_param: buildOperatorSelectActionParam("restore", loc.LocationId, "refresh"),
+            custom_recognition_param: buildOperatorRecognitionParam("restore", loc.LocationId, "refresh"),
+        };
+        refreshOverride[`SellProduct${loc.LocationId}AutoTargetOperatorNotFoundAtBottom`] = {
+            custom_recognition_param: buildOperatorRecognitionParam("target", loc.LocationId, "refresh", "not_found"),
+        };
+        refreshOverride[`SellProduct${loc.LocationId}AutoRestoreOperatorNotFoundAtBottom`] = {
+            custom_recognition_param: buildOperatorRecognitionParam("restore", loc.LocationId, "refresh", "not_found"),
         };
     }
     return [

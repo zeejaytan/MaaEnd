@@ -124,15 +124,15 @@
         "rate_limit": 0,
         "next": [
             "SellProductCardiacRemediationStationAutoSelectTargetOperator",
-            "SellProductCardiacRemediationStationTargetOperatorNotFound"
+            "SellProductCardiacRemediationStationAutoTargetOperatorNotFoundAtBottom",
+            "SellProductCardiacRemediationStationAutoSwipeTargetOperatorList"
         ]
     },
     "SellProductCardiacRemediationStationAutoSelectTargetOperator": {
         "desc": "心脏修缮站自动选择最优售卖用干员",
-        "pre_delay": 0,
-        "action": "Custom",
-        "custom_action": "SellProductSelectBestOperator",
-        "custom_action_param": {
+        "recognition": "Custom",
+        "custom_recognition": "SellProductSelectBestOperator",
+        "custom_recognition_param": {
             "mode": "cache",
             "usage": "target",
             "location": "CardiacRemediationStation",
@@ -141,13 +141,76 @@
                 121,
                 700,
                 430
-            ],
-            "max_swipes": 8
+            ]
         },
+        "pre_delay": 0,
+        "action": "Click",
         "post_delay": 0,
         "rate_limit": 0,
         "next": [
             "SellProductCardiacRemediationStationConfirmTargetOperator"
+        ]
+    },
+    "SellProductCardiacRemediationStationAutoTargetOperatorNotFoundAtBottom": {
+        "desc": "心脏修缮站自动选择售卖用干员已到底仍未找到，停止任务",
+        "recognition": "Custom",
+        "custom_recognition": "SellProductOperatorListBottom",
+        "custom_recognition_param": {
+            "mode": "cache",
+            "usage": "target",
+            "location": "CardiacRemediationStation",
+            "result": "not_found",
+            "roi": [
+                164,
+                121,
+                700,
+                430
+            ]
+        },
+        "pre_delay": 0,
+        "action": "StopTask",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "未在联络干员列表中找到可用的售卖用干员，请确认干员已持有或刷新自动干员数据"
+        }
+    },
+    "SellProductCardiacRemediationStationAutoSwipeTargetOperatorList": {
+        "desc": "心脏修缮站自动选择售卖用干员时向下滑动",
+        "recognition": "And",
+        "all_of": [
+            "SellProductInOperatorLiaison"
+        ],
+        "pre_delay": 0,
+        "action": "Swipe",
+        "begin": [
+            620,
+            520
+        ],
+        "end": [
+            [
+                620,
+                285
+            ],
+            [
+                760,
+                285
+            ]
+        ],
+        "end_hold": 200,
+        "post_wait_freezes": {
+            "time": 150,
+            "target": [
+                170,
+                120,
+                690,
+                425
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SellProductCardiacRemediationStationInTargetOperatorList"
         ]
     },
     "SellProductCardiacRemediationStationSelectTargetOperator": {
@@ -351,15 +414,15 @@
         "rate_limit": 0,
         "next": [
             "SellProductCardiacRemediationStationAutoSelectRestoreOperator",
-            "SellProductCardiacRemediationStationAutoRestoreOperatorNotFound"
+            "SellProductCardiacRemediationStationAutoRestoreOperatorNotFoundAtBottom",
+            "SellProductCardiacRemediationStationAutoSwipeRestoreOperatorList"
         ]
     },
     "SellProductCardiacRemediationStationAutoSelectRestoreOperator": {
         "desc": "心脏修缮站自动选择最优恢复干员",
-        "pre_delay": 0,
-        "action": "Custom",
-        "custom_action": "SellProductSelectBestOperator",
-        "custom_action_param": {
+        "recognition": "Custom",
+        "custom_recognition": "SellProductSelectBestOperator",
+        "custom_recognition_param": {
             "mode": "cache",
             "usage": "restore",
             "location": "CardiacRemediationStation",
@@ -368,13 +431,75 @@
                 121,
                 700,
                 430
-            ],
-            "max_swipes": 8
+            ]
         },
+        "pre_delay": 0,
+        "action": "Click",
         "post_delay": 0,
         "rate_limit": 0,
         "next": [
             "SellProductCardiacRemediationStationConfirmRestoreOperator"
+        ]
+    },
+    "SellProductCardiacRemediationStationAutoRestoreOperatorNotFoundAtBottom": {
+        "desc": "心脏修缮站自动选择恢复干员已到底仍未找到，关闭派驻列表并继续",
+        "recognition": "Custom",
+        "custom_recognition": "SellProductOperatorListBottom",
+        "custom_recognition_param": {
+            "mode": "cache",
+            "usage": "restore",
+            "location": "CardiacRemediationStation",
+            "result": "not_found",
+            "roi": [
+                164,
+                121,
+                700,
+                430
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SellProductCardiacRemediationStationAutoRestoreOperatorNotFound"
+        ]
+    },
+    "SellProductCardiacRemediationStationAutoSwipeRestoreOperatorList": {
+        "desc": "心脏修缮站自动选择恢复干员时向下滑动",
+        "recognition": "And",
+        "all_of": [
+            "SellProductInOperatorLiaison"
+        ],
+        "pre_delay": 0,
+        "action": "Swipe",
+        "begin": [
+            620,
+            520
+        ],
+        "end": [
+            [
+                620,
+                285
+            ],
+            [
+                760,
+                285
+            ]
+        ],
+        "end_hold": 200,
+        "post_wait_freezes": {
+            "time": 150,
+            "target": [
+                170,
+                120,
+                690,
+                425
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SellProductCardiacRemediationStationInRestoreOperatorList"
         ]
     },
     "SellProductCardiacRemediationStationSelectRestoreOperator": {

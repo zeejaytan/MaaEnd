@@ -8,16 +8,19 @@ import (
 )
 
 const (
-	scanOwnedOperatorsActionName = "SellProductScanOwnedOperators"
-	selectBestOperatorActionName = "SellProductSelectBestOperator"
+	selectBestOperatorRecognitionName = "SellProductSelectBestOperator"
+	operatorCacheReadyRecognitionName = "SellProductOperatorCacheReady"
+	operatorListBottomRecognitionName = "SellProductOperatorListBottom"
 
 	operatorCacheModeCache   = "cache"
 	operatorCacheModeRefresh = "refresh"
 
 	operatorActionUsageTarget  = "target"
 	operatorActionUsageRestore = "restore"
+	operatorActionUsageAll     = "all"
 
-	defaultOperatorMaxSwipes = 8
+	operatorListBottomResultScanDone = "scan_done"
+	operatorListBottomResultNotFound = "not_found"
 )
 
 type operatorCandidate struct {
@@ -33,18 +36,19 @@ type operatorCandidateGroup struct {
 }
 
 type operatorActionParam struct {
-	Mode      string `json:"mode"`
-	Usage     string `json:"usage"`
-	Location  string `json:"location"`
-	ROI       []int  `json:"roi"`
-	MaxSwipes int    `json:"max_swipes"`
+	Mode     string `json:"mode"`
+	Usage    string `json:"usage"`
+	Location string `json:"location"`
+	Result   string `json:"result"`
+	ROI      []int  `json:"roi"`
 }
 
 type operatorSelectionParam struct {
-	Usage         string
-	Location      string
-	Candidates    []operatorCandidate
-	RestoreGroups []operatorCandidateGroup
+	Usage          string
+	Location       string
+	Candidates     []operatorCandidate
+	RestoreGroups  []operatorCandidateGroup
+	ScanCandidates []operatorCandidate
 }
 
 func parseOperatorActionParam(raw string) (*operatorActionParam, error) {
@@ -65,16 +69,14 @@ func parseOperatorActionParam(raw string) (*operatorActionParam, error) {
 		return nil, fmt.Errorf("invalid mode %q", p.Mode)
 	}
 	p.Usage = strings.TrimSpace(p.Usage)
-	if p.Usage != operatorActionUsageTarget && p.Usage != operatorActionUsageRestore {
+	if p.Usage != operatorActionUsageTarget && p.Usage != operatorActionUsageRestore && p.Usage != operatorActionUsageAll {
 		return nil, fmt.Errorf("invalid usage %q", p.Usage)
 	}
 	p.Location = strings.TrimSpace(p.Location)
 	if p.Location == "" {
 		return nil, fmt.Errorf("location is empty")
 	}
-	if p.MaxSwipes <= 0 {
-		p.MaxSwipes = defaultOperatorMaxSwipes
-	}
+	p.Result = strings.TrimSpace(p.Result)
 	if len(p.ROI) == 0 {
 		p.ROI = []int{164, 121, 700, 430}
 	}
@@ -174,6 +176,9 @@ func operatorCandidateCacheName(candidate operatorCandidate) string {
 func collectScanCandidates(p *operatorSelectionParam) []operatorCandidate {
 	if p == nil {
 		return nil
+	}
+	if len(p.ScanCandidates) > 0 {
+		return normalizeOperatorCandidates(p.ScanCandidates)
 	}
 	candidates := append([]operatorCandidate{}, p.Candidates...)
 	for _, group := range p.RestoreGroups {

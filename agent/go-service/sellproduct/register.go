@@ -5,6 +5,7 @@ import "github.com/MaaXYZ/maa-framework-go/v4"
 // Register 向 MaaAgentServer 注册本包中的所有 Custom 组件。
 func Register() {
 	maa.AgentServerRegisterCustomRecognition(componentName, &NormalizedMatchRecognition{})
-	maa.AgentServerRegisterCustomAction(scanOwnedOperatorsActionName, &ScanOwnedOperatorsAction{})
-	maa.AgentServerRegisterCustomAction(selectBestOperatorActionName, &SelectBestOperatorAction{})
+	maa.AgentServerRegisterCustomRecognition(selectBestOperatorRecognitionName, &SelectBestOperatorRecognition{})
+	maa.AgentServerRegisterCustomRecognition(operatorCacheReadyRecognitionName, &OperatorCacheReadyRecognition{})
+	maa.AgentServerRegisterCustomRecognition(operatorListBottomRecognitionName, &OperatorListBottomRecognition{})
 }

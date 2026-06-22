@@ -124,15 +124,15 @@
         "rate_limit": 0,
         "next": [
             "SellProductReconstructionCommandAutoSelectTargetOperator",
-            "SellProductReconstructionCommandTargetOperatorNotFound"
+            "SellProductReconstructionCommandAutoTargetOperatorNotFoundAtBottom",
+            "SellProductReconstructionCommandAutoSwipeTargetOperatorList"
         ]
     },
     "SellProductReconstructionCommandAutoSelectTargetOperator": {
         "desc": "重建指挥部自动选择最优售卖用干员",
-        "pre_delay": 0,
-        "action": "Custom",
-        "custom_action": "SellProductSelectBestOperator",
-        "custom_action_param": {
+        "recognition": "Custom",
+        "custom_recognition": "SellProductSelectBestOperator",
+        "custom_recognition_param": {
             "mode": "cache",
             "usage": "target",
             "location": "ReconstructionCommand",
@@ -141,13 +141,76 @@
                 121,
                 700,
                 430
-            ],
-            "max_swipes": 8
+            ]
         },
+        "pre_delay": 0,
+        "action": "Click",
         "post_delay": 0,
         "rate_limit": 0,
         "next": [
             "SellProductReconstructionCommandConfirmTargetOperator"
+        ]
+    },
+    "SellProductReconstructionCommandAutoTargetOperatorNotFoundAtBottom": {
+        "desc": "重建指挥部自动选择售卖用干员已到底仍未找到，停止任务",
+        "recognition": "Custom",
+        "custom_recognition": "SellProductOperatorListBottom",
+        "custom_recognition_param": {
+            "mode": "cache",
+            "usage": "target",
+            "location": "ReconstructionCommand",
+            "result": "not_found",
+            "roi": [
+                164,
+                121,
+                700,
+                430
+            ]
+        },
+        "pre_delay": 0,
+        "action": "StopTask",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "未在联络干员列表中找到可用的售卖用干员，请确认干员已持有或刷新自动干员数据"
+        }
+    },
+    "SellProductReconstructionCommandAutoSwipeTargetOperatorList": {
+        "desc": "重建指挥部自动选择售卖用干员时向下滑动",
+        "recognition": "And",
+        "all_of": [
+            "SellProductInOperatorLiaison"
+        ],
+        "pre_delay": 0,
+        "action": "Swipe",
+        "begin": [
+            620,
+            520
+        ],
+        "end": [
+            [
+                620,
+                285
+            ],
+            [
+                760,
+                285
+            ]
+        ],
+        "end_hold": 200,
+        "post_wait_freezes": {
+            "time": 150,
+            "target": [
+                170,
+                120,
+                690,
+                425
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SellProductReconstructionCommandInTargetOperatorList"
         ]
     },
     "SellProductReconstructionCommandSelectTargetOperator": {
@@ -351,15 +414,15 @@
         "rate_limit": 0,
         "next": [
             "SellProductReconstructionCommandAutoSelectRestoreOperator",
-            "SellProductReconstructionCommandAutoRestoreOperatorNotFound"
+            "SellProductReconstructionCommandAutoRestoreOperatorNotFoundAtBottom",
+            "SellProductReconstructionCommandAutoSwipeRestoreOperatorList"
         ]
     },
     "SellProductReconstructionCommandAutoSelectRestoreOperator": {
         "desc": "重建指挥部自动选择最优恢复干员",
-        "pre_delay": 0,
-        "action": "Custom",
-        "custom_action": "SellProductSelectBestOperator",
-        "custom_action_param": {
+        "recognition": "Custom",
+        "custom_recognition": "SellProductSelectBestOperator",
+        "custom_recognition_param": {
             "mode": "cache",
             "usage": "restore",
             "location": "ReconstructionCommand",
@@ -368,13 +431,75 @@
                 121,
                 700,
                 430
-            ],
-            "max_swipes": 8
+            ]
         },
+        "pre_delay": 0,
+        "action": "Click",
         "post_delay": 0,
         "rate_limit": 0,
         "next": [
             "SellProductReconstructionCommandConfirmRestoreOperator"
+        ]
+    },
+    "SellProductReconstructionCommandAutoRestoreOperatorNotFoundAtBottom": {
+        "desc": "重建指挥部自动选择恢复干员已到底仍未找到，关闭派驻列表并继续",
+        "recognition": "Custom",
+        "custom_recognition": "SellProductOperatorListBottom",
+        "custom_recognition_param": {
+            "mode": "cache",
+            "usage": "restore",
+            "location": "ReconstructionCommand",
+            "result": "not_found",
+            "roi": [
+                164,
+                121,
+                700,
+                430
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SellProductReconstructionCommandAutoRestoreOperatorNotFound"
+        ]
+    },
+    "SellProductReconstructionCommandAutoSwipeRestoreOperatorList": {
+        "desc": "重建指挥部自动选择恢复干员时向下滑动",
+        "recognition": "And",
+        "all_of": [
+            "SellProductInOperatorLiaison"
+        ],
+        "pre_delay": 0,
+        "action": "Swipe",
+        "begin": [
+            620,
+            520
+        ],
+        "end": [
+            [
+                620,
+                285
+            ],
+            [
+                760,
+                285
+            ]
+        ],
+        "end_hold": 200,
+        "post_wait_freezes": {
+            "time": 150,
+            "target": [
+                170,
+                120,
+                690,
+                425
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SellProductReconstructionCommandInRestoreOperatorList"
         ]
     },
     "SellProductReconstructionCommandSelectRestoreOperator": {
