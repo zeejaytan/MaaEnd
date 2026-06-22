@@ -50,6 +50,9 @@ func TestBuildOperatorSelectionData(t *testing.T) {
 	if target[0].Name != "Both" || target[0].Priority != 0 {
 		t.Fatalf("first target candidate = %#v, want Both priority 0", target[0])
 	}
+	if target[0].CacheName != "双加成" {
+		t.Fatalf("first target cache name = %q, want 双加成", target[0].CacheName)
+	}
 	if target[1].Name != "Money" || target[1].Priority != 1 {
 		t.Fatalf("second target candidate = %#v, want Money priority 1", target[1])
 	}
@@ -63,6 +66,9 @@ func TestBuildOperatorSelectionData(t *testing.T) {
 	restore := got.RestoreGroups[0].Candidates
 	if len(restore) != 1 || restore[0].Name != "Restore" {
 		t.Fatalf("restore candidates = %#v, want Restore", restore)
+	}
+	if restore[0].CacheName != "恢复" {
+		t.Fatalf("restore cache name = %q, want 恢复", restore[0].CacheName)
 	}
 }
 

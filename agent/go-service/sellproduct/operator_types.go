@@ -21,9 +21,10 @@ const (
 )
 
 type operatorCandidate struct {
-	Name     string   `json:"name"`
-	Expected []string `json:"expected"`
-	Priority int      `json:"priority"`
+	Name      string   `json:"name"`
+	CacheName string   `json:"cache_name,omitempty"`
+	Expected  []string `json:"expected"`
+	Priority  int      `json:"priority"`
 }
 
 type operatorCandidateGroup struct {
@@ -88,6 +89,10 @@ func normalizeOperatorCandidates(candidates []operatorCandidate) []operatorCandi
 	seen := make(map[string]struct{}, len(candidates))
 	for _, candidate := range candidates {
 		candidate.Name = strings.TrimSpace(candidate.Name)
+		candidate.CacheName = strings.TrimSpace(candidate.CacheName)
+		if candidate.CacheName == "" {
+			candidate.CacheName = candidate.Name
+		}
 		candidate.Expected = uniqueNonEmptyStrings(candidate.Expected)
 		if candidate.Name == "" || len(candidate.Expected) == 0 {
 			continue
@@ -152,11 +157,18 @@ func filterOwnedCandidates(candidates []operatorCandidate, owned map[string]stru
 	}
 	filtered := make([]operatorCandidate, 0, len(candidates))
 	for _, candidate := range candidates {
-		if _, ok := owned[candidate.Name]; ok {
+		if _, ok := owned[operatorCandidateCacheName(candidate)]; ok {
 			filtered = append(filtered, candidate)
 		}
 	}
 	return filtered
+}
+
+func operatorCandidateCacheName(candidate operatorCandidate) string {
+	if candidate.CacheName != "" {
+		return candidate.CacheName
+	}
+	return candidate.Name
 }
 
 func collectScanCandidates(p *operatorSelectionParam) []operatorCandidate {

@@ -152,9 +152,10 @@ func buildTargetCandidates(settlement settlementTradeSettlement, localeOrder map
 			priority = 1
 		}
 		candidates = append(candidates, operatorCandidate{
-			Name:     entry.Name,
-			Expected: entry.Expected,
-			Priority: priority,
+			Name:      entry.Name,
+			CacheName: entry.CacheName,
+			Expected:  entry.Expected,
+			Priority:  priority,
 		})
 	}
 	return normalizeOperatorCandidates(candidates)
@@ -168,9 +169,10 @@ func buildRestoreCandidates(settlement settlementTradeSettlement, localeOrder ma
 	candidates := make([]operatorCandidate, 0, len(entries))
 	for index, entry := range entries {
 		candidates = append(candidates, operatorCandidate{
-			Name:     entry.Name,
-			Expected: entry.Expected,
-			Priority: index,
+			Name:      entry.Name,
+			CacheName: entry.CacheName,
+			Expected:  entry.Expected,
+			Priority:  index,
 		})
 	}
 	return normalizeOperatorCandidates(candidates)
@@ -178,6 +180,7 @@ func buildRestoreCandidates(settlement settlementTradeSettlement, localeOrder ma
 
 type operatorDataEntry struct {
 	Name       string
+	CacheName  string
 	Expected   []string
 	BonusTypes map[string]struct{}
 }
@@ -199,14 +202,23 @@ func collectOperatorBonusTypes(settlement settlementTradeSettlement, accepted ma
 				continue
 			}
 			name := toPascalCase(firstNonEmpty(operator.Name["EN"], operator.CharID))
+			cacheName := firstNonEmpty(
+				operator.Name["CN"],
+				operator.Name["TC"],
+				operator.Name["EN"],
+				operator.Name["JP"],
+				operator.Name["KR"],
+				operator.CharID,
+			)
 			expected := operatorExpectedNames(operator.Name)
-			if name == "" || len(expected) == 0 {
+			if name == "" || cacheName == "" || len(expected) == 0 {
 				continue
 			}
 			entry := operators[name]
 			if entry.Name == "" {
 				entry = operatorDataEntry{
 					Name:       name,
+					CacheName:  cacheName,
 					Expected:   expected,
 					BonusTypes: map[string]struct{}{},
 				}

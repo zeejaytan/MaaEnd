@@ -230,7 +230,7 @@ func refreshOwnedOperators(
 	if err := writeOperatorCacheFile(path, cache); err != nil {
 		return nil, err
 	}
-	return operatorNameSet(cache.Operators), nil
+	return operatorNameSet(operatorCacheOperatorsForUID(cache, uid)), nil
 }
 
 func recordObservedOperators(observed []string) (map[string]struct{}, error) {
@@ -246,7 +246,7 @@ func recordObservedOperators(observed []string) (map[string]struct{}, error) {
 			return nil, err
 		}
 	}
-	return operatorNameSet(cache.Operators), nil
+	return operatorNameSet(operatorCacheOperatorsForUID(cache, uid)), nil
 }
 
 func scanOwnedOperators(ctx *maa.Context, candidates []operatorCandidate, roi []int, maxSwipes int) ([]string, error) {
@@ -267,11 +267,12 @@ func scanOwnedOperators(ctx *maa.Context, candidates []operatorCandidate, roi []
 			return nil, err
 		}
 		for _, candidate := range candidates {
-			if _, ok := ownedSet[candidate.Name]; ok {
+			cacheName := operatorCandidateCacheName(candidate)
+			if _, ok := ownedSet[cacheName]; ok {
 				continue
 			}
 			if findBestMatch(items, candidate.Expected) != nil {
-				ownedSet[candidate.Name] = struct{}{}
+				ownedSet[cacheName] = struct{}{}
 			}
 		}
 		if page < maxSwipes {
@@ -311,17 +312,18 @@ func selectBestOperator(
 				return "", nil, err
 			}
 			for _, discoveryCandidate := range discoveryCandidates {
-				if _, ok := observedSet[discoveryCandidate.Name]; ok {
+				discoveryCacheName := operatorCandidateCacheName(discoveryCandidate)
+				if _, ok := observedSet[discoveryCacheName]; ok {
 					continue
 				}
 				if findBestMatch(items, discoveryCandidate.Expected) != nil {
-					observedSet[discoveryCandidate.Name] = struct{}{}
+					observedSet[discoveryCacheName] = struct{}{}
 				}
 			}
 			match := findBestMatch(items, candidate.Expected)
 			if match != nil {
 				clickOperatorBox(adaptor, match.box)
-				observedSet[candidate.Name] = struct{}{}
+				observedSet[operatorCandidateCacheName(candidate)] = struct{}{}
 				return candidate.Name, sortedSetValues(observedSet), nil
 			}
 			if page < maxSwipes {

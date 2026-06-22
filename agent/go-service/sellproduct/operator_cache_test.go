@@ -16,7 +16,7 @@ func TestOperatorCacheReadWrite(t *testing.T) {
 	if err := writeOperatorCache(
 		path,
 		uid,
-		[]string{"Wulfgard", "Ardelia", "Wulfgard", ""},
+		[]string{"佩丽卡", "陈千语", "佩丽卡", ""},
 		now,
 	); err != nil {
 		t.Fatalf("writeOperatorCache: %v", err)
@@ -31,16 +31,17 @@ func TestOperatorCacheReadWrite(t *testing.T) {
 	if cache.UpdatedAt != "2026-06-14T01:02:03Z" {
 		t.Fatalf("updated_at = %q", cache.UpdatedAt)
 	}
-	if cache.UID != uid {
-		t.Fatalf("uid = %q, want %q", cache.UID, uid)
+	account := cache.Accounts[uid]
+	if account.UpdatedAt != "2026-06-14T01:02:03Z" {
+		t.Fatalf("account updated_at = %q", account.UpdatedAt)
 	}
-	want := []string{"Ardelia", "Wulfgard"}
-	if !reflect.DeepEqual(cache.Operators, want) {
-		t.Fatalf("operators = %#v, want %#v", cache.Operators, want)
+	want := []string{"佩丽卡", "陈千语"}
+	if !reflect.DeepEqual(account.Operators, want) {
+		t.Fatalf("operators = %#v, want %#v", account.Operators, want)
 	}
 }
 
-func TestDefaultOperatorCachePathUsesUID(t *testing.T) {
+func TestDefaultOperatorCachePathIsSingleFile(t *testing.T) {
 	tests := []struct {
 		name string
 		uid  string
@@ -49,17 +50,17 @@ func TestDefaultOperatorCachePathUsesUID(t *testing.T) {
 		{
 			name: "hashed uid",
 			uid:  "abc123",
-			want: filepath.Join("debug", "record", "SellProductOwnedOperators.abc123.json"),
+			want: filepath.Join("debug", "record", "SellProductOwnedOperators.json"),
 		},
 		{
 			name: "empty uid",
 			uid:  "",
-			want: filepath.Join("debug", "record", "SellProductOwnedOperators.unknown.json"),
+			want: filepath.Join("debug", "record", "SellProductOwnedOperators.json"),
 		},
 		{
 			name: "unsafe uid",
 			uid:  "../uid value",
-			want: filepath.Join("debug", "record", "SellProductOwnedOperators..._uid_value.json"),
+			want: filepath.Join("debug", "record", "SellProductOwnedOperators.json"),
 		},
 	}
 
@@ -79,8 +80,8 @@ func TestOperatorCacheMissingAndEmpty(t *testing.T) {
 	if err != nil {
 		t.Fatalf("missing cache should not error: %v", err)
 	}
-	if len(cache.Operators) != 0 {
-		t.Fatalf("missing cache operators = %#v", cache.Operators)
+	if len(cache.Accounts) != 0 {
+		t.Fatalf("missing cache accounts = %#v", cache.Accounts)
 	}
 
 	empty := filepath.Join(dir, "empty.json")
@@ -91,38 +92,38 @@ func TestOperatorCacheMissingAndEmpty(t *testing.T) {
 	if err != nil {
 		t.Fatalf("empty cache should not error: %v", err)
 	}
-	if len(cache.Operators) != 0 {
-		t.Fatalf("empty cache operators = %#v", cache.Operators)
+	if len(cache.Accounts) != 0 {
+		t.Fatalf("empty cache accounts = %#v", cache.Accounts)
 	}
 }
 
 func TestNormalizeOperatorCandidates(t *testing.T) {
 	got := normalizeOperatorCandidates([]operatorCandidate{
-		{Name: "Beta", Expected: []string{"贝塔"}, Priority: 2},
-		{Name: "", Expected: []string{"忽略"}, Priority: 0},
-		{Name: "Alpha", Expected: []string{"阿尔法", "阿尔法", ""}, Priority: 1},
+		{Name: "Beta", CacheName: "贝塔", Expected: []string{"贝塔"}, Priority: 2},
+		{Name: "", CacheName: "忽略", Expected: []string{"忽略"}, Priority: 0},
+		{Name: "Alpha", CacheName: "阿尔法", Expected: []string{"阿尔法", "阿尔法", ""}, Priority: 1},
 		{Name: "Beta", Expected: []string{"重复"}, Priority: 0},
 	})
 	want := []operatorCandidate{
-		{Name: "Alpha", Expected: []string{"阿尔法"}, Priority: 1},
-		{Name: "Beta", Expected: []string{"贝塔"}, Priority: 2},
+		{Name: "Alpha", CacheName: "阿尔法", Expected: []string{"阿尔法"}, Priority: 1},
+		{Name: "Beta", CacheName: "贝塔", Expected: []string{"贝塔"}, Priority: 2},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("normalizeOperatorCandidates = %#v, want %#v", got, want)
 	}
 }
 
-func TestFilterOwnedCandidates(t *testing.T) {
+func TestFilterOwnedCandidatesUsesCacheName(t *testing.T) {
 	candidates := []operatorCandidate{
-		{Name: "Both", Priority: 0},
-		{Name: "Money", Priority: 1},
-		{Name: "Exp", Priority: 2},
+		{Name: "Both", CacheName: "双加成", Priority: 0},
+		{Name: "Money", CacheName: "收益", Priority: 1},
+		{Name: "Exp", CacheName: "经验", Priority: 2},
 	}
-	owned := operatorNameSet([]string{"Exp", "Both"})
+	owned := operatorNameSet([]string{"经验", "双加成"})
 	got := filterOwnedCandidates(candidates, owned)
 	want := []operatorCandidate{
-		{Name: "Both", Priority: 0},
-		{Name: "Exp", Priority: 2},
+		{Name: "Both", CacheName: "双加成", Priority: 0},
+		{Name: "Exp", CacheName: "经验", Priority: 2},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("filterOwnedCandidates = %#v, want %#v", got, want)
@@ -134,58 +135,52 @@ func TestOperatorCacheHasSnapshot(t *testing.T) {
 	if operatorCacheHasSnapshot(operatorCacheFile{}, uid) {
 		t.Fatal("empty cache should not be treated as a snapshot")
 	}
-	if !operatorCacheHasSnapshot(operatorCacheFile{SchemaVersion: operatorCacheSchemaVersion, UID: uid}, uid) {
+	if !operatorCacheHasSnapshot(operatorCacheFile{
+		SchemaVersion: operatorCacheSchemaVersion,
+		Accounts: map[string]operatorCacheAccount{
+			uid: {Operators: []string{"佩丽卡"}},
+		},
+	}, uid) {
 		t.Fatal("versioned cache should be treated as a snapshot")
 	}
-	if !operatorCacheHasSnapshot(operatorCacheFile{Operators: []string{"Alpha"}, UID: uid}, uid) {
-		t.Fatal("cache with operators should be treated as a snapshot")
-	}
-	if operatorCacheHasSnapshot(operatorCacheFile{Operators: []string{"Alpha"}, UID: "other"}, uid) {
-		t.Fatal("cache for another uid should not be treated as a snapshot")
+	if operatorCacheHasSnapshot(operatorCacheFile{
+		SchemaVersion: operatorCacheSchemaVersion,
+		Accounts: map[string]operatorCacheAccount{
+			"other": {Operators: []string{"佩丽卡"}},
+		},
+	}, uid) {
+		t.Fatal("cache without this uid should not be treated as a snapshot")
 	}
 }
 
-func TestMergeOperatorCacheUpdatesOwnedOperators(t *testing.T) {
+func TestMergeOperatorCacheUpdatesOnlyCurrentAccount(t *testing.T) {
 	now := time.Date(2026, 6, 14, 1, 2, 3, 0, time.UTC)
 	uid := "abc123"
 	cache := operatorCacheFile{
-		UID:       uid,
-		Operators: []string{"Old", "Keep"},
+		SchemaVersion: operatorCacheSchemaVersion,
+		Accounts: map[string]operatorCacheAccount{
+			uid:     {Operators: []string{"旧干员", "保留干员"}},
+			"other": {Operators: []string{"其他账号干员"}},
+		},
 	}
 	got := mergeOperatorCache(
 		cache,
 		uid,
-		[]operatorCandidate{{Name: "Old"}, {Name: "New"}},
-		[]string{"New"},
+		[]operatorCandidate{{Name: "Old", CacheName: "旧干员"}, {Name: "New", CacheName: "新干员"}},
+		[]string{"新干员"},
 		now,
 	)
-	if got.UID != uid {
-		t.Fatalf("uid = %q, want %q", got.UID, uid)
+	if got.SchemaVersion != operatorCacheSchemaVersion {
+		t.Fatalf("schema version = %d, want %d", got.SchemaVersion, operatorCacheSchemaVersion)
 	}
-	if want := []string{"Keep", "New"}; !reflect.DeepEqual(got.Operators, want) {
-		t.Fatalf("operators = %#v, want %#v", got.Operators, want)
+	if got.UpdatedAt != "2026-06-14T01:02:03Z" {
+		t.Fatalf("updated_at = %q", got.UpdatedAt)
 	}
-}
-
-func TestMergeOperatorCacheDropsMismatchedUID(t *testing.T) {
-	now := time.Date(2026, 6, 14, 1, 2, 3, 0, time.UTC)
-	uid := "abc123"
-	cache := operatorCacheFile{
-		UID:       "other",
-		Operators: []string{"OtherAccount"},
+	if want := []string{"保留干员", "新干员"}; !reflect.DeepEqual(got.Accounts[uid].Operators, want) {
+		t.Fatalf("operators = %#v, want %#v", got.Accounts[uid].Operators, want)
 	}
-	got := mergeOperatorCache(
-		cache,
-		uid,
-		[]operatorCandidate{{Name: "New"}},
-		[]string{"New"},
-		now,
-	)
-	if got.UID != uid {
-		t.Fatalf("uid = %q, want %q", got.UID, uid)
-	}
-	if want := []string{"New"}; !reflect.DeepEqual(got.Operators, want) {
-		t.Fatalf("operators = %#v, want %#v", got.Operators, want)
+	if want := []string{"其他账号干员"}; !reflect.DeepEqual(got.Accounts["other"].Operators, want) {
+		t.Fatalf("other account operators = %#v, want %#v", got.Accounts["other"].Operators, want)
 	}
 }
 
@@ -193,33 +188,23 @@ func TestMergeObservedOperatorCacheOnlyAddsObservedOperators(t *testing.T) {
 	now := time.Date(2026, 6, 14, 1, 2, 3, 0, time.UTC)
 	uid := "abc123"
 	cache := operatorCacheFile{
-		UID:       uid,
-		Operators: []string{"Keep"},
+		SchemaVersion: operatorCacheSchemaVersion,
+		Accounts: map[string]operatorCacheAccount{
+			uid:     {Operators: []string{"保留干员"}},
+			"other": {Operators: []string{"其他账号干员"}},
+		},
 	}
-	got := mergeObservedOperatorCache(cache, uid, []string{"New", "Keep", ""}, now)
+	got := mergeObservedOperatorCache(cache, uid, []string{"新干员", "保留干员", ""}, now)
 	if got.SchemaVersion != operatorCacheSchemaVersion {
 		t.Fatalf("schema version = %d, want %d", got.SchemaVersion, operatorCacheSchemaVersion)
 	}
 	if got.UpdatedAt != "2026-06-14T01:02:03Z" {
 		t.Fatalf("updated_at = %q", got.UpdatedAt)
 	}
-	if want := []string{"Keep", "New"}; !reflect.DeepEqual(got.Operators, want) {
-		t.Fatalf("operators = %#v, want %#v", got.Operators, want)
+	if want := []string{"保留干员", "新干员"}; !reflect.DeepEqual(got.Accounts[uid].Operators, want) {
+		t.Fatalf("operators = %#v, want %#v", got.Accounts[uid].Operators, want)
 	}
-}
-
-func TestMergeObservedOperatorCacheDropsMismatchedUID(t *testing.T) {
-	now := time.Date(2026, 6, 14, 1, 2, 3, 0, time.UTC)
-	uid := "abc123"
-	cache := operatorCacheFile{
-		UID:       "other",
-		Operators: []string{"OtherAccount"},
-	}
-	got := mergeObservedOperatorCache(cache, uid, []string{"New"}, now)
-	if got.UID != uid {
-		t.Fatalf("uid = %q, want %q", got.UID, uid)
-	}
-	if want := []string{"New"}; !reflect.DeepEqual(got.Operators, want) {
-		t.Fatalf("operators = %#v, want %#v", got.Operators, want)
+	if want := []string{"其他账号干员"}; !reflect.DeepEqual(got.Accounts["other"].Operators, want) {
+		t.Fatalf("other account operators = %#v, want %#v", got.Accounts["other"].Operators, want)
 	}
 }

@@ -22,10 +22,14 @@ const (
 var resolveOperatorCachePathFunc = defaultOperatorCachePath
 
 type operatorCacheFile struct {
-	SchemaVersion int      `json:"schema_version"`
-	UpdatedAt     string   `json:"updated_at"`
-	UID           string   `json:"uid"`
-	Operators     []string `json:"operators"`
+	SchemaVersion int                             `json:"schema_version"`
+	UpdatedAt     string                          `json:"updated_at"`
+	Accounts      map[string]operatorCacheAccount `json:"accounts,omitempty"`
+}
+
+type operatorCacheAccount struct {
+	UpdatedAt string   `json:"updated_at"`
+	Operators []string `json:"operators"`
 }
 
 func currentOperatorCacheUID() string {
@@ -33,8 +37,7 @@ func currentOperatorCacheUID() string {
 }
 
 func defaultOperatorCachePath(uid string) string {
-	fileName := fmt.Sprintf("%s.%s%s", operatorCacheFilePrefix, normalizeOperatorCacheUID(uid), operatorCacheFileExt)
-	return filepath.Join("debug", "record", fileName)
+	return filepath.Join("debug", "record", operatorCacheFilePrefix+operatorCacheFileExt)
 }
 
 func readOperatorCache(path string) (operatorCacheFile, error) {
@@ -53,23 +56,22 @@ func readOperatorCache(path string) (operatorCacheFile, error) {
 	if err := json.Unmarshal(raw, &cache); err != nil {
 		return operatorCacheFile{}, fmt.Errorf("parse operator cache: %w", err)
 	}
-	if strings.TrimSpace(cache.UID) != "" {
-		cache.UID = normalizeOperatorCacheUID(cache.UID)
-	}
-	cache.Operators = uniqueNonEmptyStrings(cache.Operators)
-	sort.Strings(cache.Operators)
-	return cache, nil
+	return normalizeOperatorCacheFile(cache), nil
 }
 
 func writeOperatorCache(path string, uid string, operators []string, now time.Time) error {
-	operators = uniqueNonEmptyStrings(operators)
-	sort.Strings(operators)
+	uid = normalizeOperatorCacheUID(uid)
+	updatedAt := now.UTC().Format(time.RFC3339)
 
 	cache := operatorCacheFile{
 		SchemaVersion: operatorCacheSchemaVersion,
-		UpdatedAt:     now.UTC().Format(time.RFC3339),
-		UID:           normalizeOperatorCacheUID(uid),
-		Operators:     operators,
+		UpdatedAt:     updatedAt,
+		Accounts: map[string]operatorCacheAccount{
+			uid: {
+				UpdatedAt: updatedAt,
+				Operators: sortedSetValues(operatorNameSet(operators)),
+			},
+		},
 	}
 	return writeOperatorCacheFile(path, cache)
 }
@@ -78,6 +80,7 @@ func writeOperatorCacheFile(path string, cache operatorCacheFile) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		return fmt.Errorf("create operator cache dir: %w", err)
 	}
+	cache = normalizeOperatorCacheFile(cache)
 	raw, err := json.MarshalIndent(cache, "", "    ")
 	if err != nil {
 		return fmt.Errorf("marshal operator cache: %w", err)
@@ -98,7 +101,7 @@ func mergeOperatorCache(
 ) operatorCacheFile {
 	uid = normalizeOperatorCacheUID(uid)
 	operatorSet := operatorNameSet(operatorCacheOperatorsForUID(cache, uid))
-	scanSet := operatorCandidateNameSet(scanCandidates)
+	scanSet := operatorCandidateCacheNameSet(scanCandidates)
 
 	for name := range scanSet {
 		delete(operatorSet, name)
@@ -109,12 +112,7 @@ func mergeOperatorCache(
 		}
 	}
 
-	return operatorCacheFile{
-		SchemaVersion: operatorCacheSchemaVersion,
-		UpdatedAt:     now.UTC().Format(time.RFC3339),
-		UID:           uid,
-		Operators:     sortedSetValues(operatorSet),
-	}
+	return withOperatorCacheAccount(cache, uid, operatorSet, now)
 }
 
 func mergeObservedOperatorCache(cache operatorCacheFile, uid string, observed []string, now time.Time) operatorCacheFile {
@@ -127,28 +125,74 @@ func mergeObservedOperatorCache(cache operatorCacheFile, uid string, observed []
 		operatorSet[name] = struct{}{}
 	}
 
-	return operatorCacheFile{
-		SchemaVersion: operatorCacheSchemaVersion,
-		UpdatedAt:     now.UTC().Format(time.RFC3339),
-		UID:           uid,
-		Operators:     sortedSetValues(operatorSet),
-	}
+	return withOperatorCacheAccount(cache, uid, operatorSet, now)
 }
 
 func operatorCacheHasSnapshot(cache operatorCacheFile, uid string) bool {
 	uid = normalizeOperatorCacheUID(uid)
-	if cache.UID != "" && normalizeOperatorCacheUID(cache.UID) != uid {
-		return false
-	}
-	return cache.SchemaVersion > 0 || cache.UpdatedAt != "" || len(cache.Operators) > 0
+	account, ok := normalizeOperatorCacheFile(cache).Accounts[uid]
+	return ok && (account.UpdatedAt != "" || len(account.Operators) > 0)
 }
 
 func operatorCacheOperatorsForUID(cache operatorCacheFile, uid string) []string {
 	uid = normalizeOperatorCacheUID(uid)
-	if cache.UID != "" && normalizeOperatorCacheUID(cache.UID) != uid {
+	account, ok := normalizeOperatorCacheFile(cache).Accounts[uid]
+	if !ok {
 		return nil
 	}
-	return cache.Operators
+	return account.Operators
+}
+
+func withOperatorCacheAccount(
+	cache operatorCacheFile,
+	uid string,
+	operatorSet map[string]struct{},
+	now time.Time,
+) operatorCacheFile {
+	cache = normalizeOperatorCacheFile(cache)
+	uid = normalizeOperatorCacheUID(uid)
+	updatedAt := now.UTC().Format(time.RFC3339)
+	cache.SchemaVersion = operatorCacheSchemaVersion
+	cache.UpdatedAt = updatedAt
+	if cache.Accounts == nil {
+		cache.Accounts = map[string]operatorCacheAccount{}
+	}
+	cache.Accounts[uid] = operatorCacheAccount{
+		UpdatedAt: updatedAt,
+		Operators: sortedSetValues(operatorSet),
+	}
+	return cache
+}
+
+func normalizeOperatorCacheFile(cache operatorCacheFile) operatorCacheFile {
+	normalized := operatorCacheFile{
+		SchemaVersion: cache.SchemaVersion,
+		UpdatedAt:     strings.TrimSpace(cache.UpdatedAt),
+		Accounts:      map[string]operatorCacheAccount{},
+	}
+	if normalized.SchemaVersion == 0 && len(cache.Accounts) > 0 {
+		normalized.SchemaVersion = operatorCacheSchemaVersion
+	}
+	for uid, account := range cache.Accounts {
+		uid = normalizeOperatorCacheUID(uid)
+		operatorSet := operatorNameSet(account.Operators)
+		existing := normalized.Accounts[uid]
+		for _, name := range existing.Operators {
+			operatorSet[name] = struct{}{}
+		}
+		updatedAt := strings.TrimSpace(account.UpdatedAt)
+		if updatedAt == "" {
+			updatedAt = existing.UpdatedAt
+		}
+		normalized.Accounts[uid] = operatorCacheAccount{
+			UpdatedAt: updatedAt,
+			Operators: sortedSetValues(operatorSet),
+		}
+	}
+	if len(normalized.Accounts) == 0 {
+		normalized.Accounts = nil
+	}
+	return normalized
 }
 
 func writeOperatorCacheAtomic(path string, content []byte, perm os.FileMode) error {
@@ -227,13 +271,14 @@ func operatorNameSet(names []string) map[string]struct{} {
 	return set
 }
 
-func operatorCandidateNameSet(candidates []operatorCandidate) map[string]struct{} {
+func operatorCandidateCacheNameSet(candidates []operatorCandidate) map[string]struct{} {
 	set := make(map[string]struct{}, len(candidates))
 	for _, candidate := range candidates {
-		if candidate.Name == "" {
+		name := operatorCandidateCacheName(candidate)
+		if name == "" {
 			continue
 		}
-		set[candidate.Name] = struct{}{}
+		set[name] = struct{}{}
 	}
 	return set
 }
