@@ -141,6 +141,22 @@ function filterOperatorCaseEntries(operatorNames) {
     return OPERATOR_CASE_ENTRIES.filter((entry) => operatorNames.has(entry.name));
 }
 
+// 构造 SellProductSelectBestOperator 的完整参数，供默认节点和强制刷新覆盖复用。
+function buildOperatorSelectActionParam(usage, location, mode = "cache") {
+    return {
+        mode,
+        usage,
+        location,
+        roi: [
+            164,
+            121,
+            700,
+            430,
+        ],
+        max_swipes: 8,
+    };
+}
+
 // TODO(SellProduct): 活动结束后，临时排除以下活动物品，避免继续生成到可售卖列表。
 // 当 settlement_trade.json 数据更新并确认活动物品已移除后，删除该常量与下方过滤判断。
 const TEMP_EXCLUDED_ITEM_CN_NAMES = new Set([
@@ -440,6 +456,30 @@ function buildRestoreOperatorCases(nodePrefix, operatorNames) {
     ];
 }
 
+// 生成全局「拥有干员刷新方式」选项；强制刷新 case 覆盖完整参数，避免浅合并丢失候选列表。
+function buildOperatorRefreshModeCases(locations) {
+    const refreshOverride = {};
+    for (const loc of locations) {
+        refreshOverride[`SellProduct${loc.LocationId}AutoSelectTargetOperator`] = {
+            custom_action_param: buildOperatorSelectActionParam("target", loc.LocationId, "refresh"),
+        };
+        refreshOverride[`SellProduct${loc.LocationId}AutoSelectRestoreOperator`] = {
+            custom_action_param: buildOperatorSelectActionParam("restore", loc.LocationId, "refresh"),
+        };
+    }
+    return [
+        {
+            name: "Cache",
+            label: "$task.SellProduct.OperatorDataSourceCache",
+        },
+        {
+            name: "Refresh",
+            label: "$task.SellProduct.OperatorDataSourceRefresh",
+            pipeline_override: refreshOverride,
+        },
+    ];
+}
+
 // ===== BetterSliding Quantity.Box（Win 端 / ADB 端） =====
 // 改这里就够了，模板里 4 个 BetterSliding 节点会自动同步
 const QUANTITY_BOX = [
@@ -467,7 +507,9 @@ const MAX_QUANTITY_BOX_ADB = [
     32,
 ];
 
-export const settlementFlatRows = LOCATIONS.map((loc) => {
+const OPERATOR_REFRESH_MODE_CASES = buildOperatorRefreshModeCases(LOCATIONS);
+
+export const settlementFlatRows = LOCATIONS.map((loc, index) => {
     const entries = buildItemCaseEntries(loc.items);
     const targetOperatorCases = buildTargetOperatorCases(loc.LocationId, loc.TargetOperatorNames);
     const restoreOperatorCases = buildRestoreOperatorCases(loc.LocationId, loc.RestoreOperatorNames);
@@ -477,6 +519,7 @@ export const settlementFlatRows = LOCATIONS.map((loc) => {
         LocationId: loc.LocationId,
         LocationDesc: loc.LocationDesc,
         TextExpected: loc.TextExpected,
+        OperatorRefreshModeCases: index === 0 ? OPERATOR_REFRESH_MODE_CASES : [],
         QuantityBox: QUANTITY_BOX,
         QuantityBoxAdb: QUANTITY_BOX_ADB,
         MaxTargetBox: MAX_QUANTITY_BOX,

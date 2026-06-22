@@ -8,6 +8,7 @@
             "option": [
                 "SellProductSchedule",
                 "SellBeyondAidQuota",
+                "SellProductOperatorDataSource",
                 "${RegionPrefix}Sell"
             ],
             "controller": [
@@ -112,6 +113,14 @@
                     }
                 }
             ]
+        },
+        // ==== 自动干员数据来源 =====
+        "SellProductOperatorDataSource": {
+            "type": "select",
+            "label": "$task.SellProduct.OperatorDataSource",
+            "description": "$task.SellProduct.OperatorDataSourceDescription",
+            "default_case": "Cache",
+            "cases": "${OperatorRefreshModeCases}"
         },
         // ==== 超出调度券上限时是否仍确认交易 =====
         "SellBeyondAidQuota": {
@@ -221,11 +230,15 @@
                             "anchor": {
                                 "SellProductBeforeSellOperator": "SellProduct${LocationId}BeforeSellOperator"
                             }
+                        },
+                        "SellProduct${LocationId}SetAfterSellOperatorAnchor": {
+                            "anchor": {
+                                "SellProductAfterSellOperator": "SellProduct${LocationId}AfterSellOperator"
+                            }
                         }
                     },
                     "option": [
-                        "${RegionPrefix}${LocationId}TargetOperator",
-                        "${RegionPrefix}${LocationId}RestoreOperator"
+                        "${RegionPrefix}${LocationId}OperatorSelectionMode"
                     ]
                 },
                 {
@@ -237,6 +250,88 @@
                             }
                         }
                     }
+                }
+            ]
+        },
+        "${RegionPrefix}${LocationId}OperatorSelectionMode": {
+            "type": "select",
+            "label": "$task.SellProduct.OperatorSelectionMode",
+            "description": "$task.SellProduct.OperatorSelectionModeDescription",
+            "default_case": "Auto",
+            "cases": [
+                {
+                    "name": "Auto",
+                    "label": "$task.SellProduct.OperatorSelectionModeAuto",
+                    "pipeline_override": {
+                        "SellProduct${LocationId}SetAfterSellOperatorAnchor": {
+                            "anchor": {
+                                "SellProductAfterSellOperator": "SellProduct${LocationId}AfterSellOperator"
+                            }
+                        },
+                        "SellProduct${LocationId}BeforeSellOperator": {
+                            "next": [
+                                "SellProduct${LocationId}OpenTargetOperatorList"
+                            ]
+                        },
+                        "SellProduct${LocationId}InTargetOperatorList": {
+                            "next": [
+                                "SellProduct${LocationId}AutoSelectTargetOperator",
+                                "SellProduct${LocationId}TargetOperatorNotFound"
+                            ]
+                        },
+                        "SellProduct${LocationId}AfterSellOperator": {
+                            "next": [
+                                "SellProduct${LocationId}OpenRestoreOperatorList"
+                            ]
+                        },
+                        "SellProduct${LocationId}InRestoreOperatorList": {
+                            "next": [
+                                "SellProduct${LocationId}AutoSelectRestoreOperator",
+                                "SellProduct${LocationId}AutoRestoreOperatorNotFound"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Manual",
+                    "label": "$task.SellProduct.OperatorSelectionModeManual",
+                    "pipeline_override": {
+                        "SellProduct${LocationId}SetAfterSellOperatorAnchor": {
+                            "anchor": {
+                                "SellProductAfterSellOperator": ""
+                            }
+                        },
+                        "SellProduct${LocationId}BeforeSellOperator": {
+                            "next": [
+                                "SellProduct${LocationId}CurrentTargetOperator",
+                                "SellProduct${LocationId}OpenTargetOperatorList"
+                            ]
+                        },
+                        "SellProduct${LocationId}InTargetOperatorList": {
+                            "next": [
+                                "SellProduct${LocationId}SelectTargetOperator",
+                                "SellProduct${LocationId}SwipeTargetOperatorList",
+                                "SellProduct${LocationId}TargetOperatorNotFound"
+                            ]
+                        },
+                        "SellProduct${LocationId}AfterSellOperator": {
+                            "next": [
+                                "SellProduct${LocationId}CurrentRestoreOperator",
+                                "SellProduct${LocationId}OpenRestoreOperatorList"
+                            ]
+                        },
+                        "SellProduct${LocationId}InRestoreOperatorList": {
+                            "next": [
+                                "SellProduct${LocationId}SelectRestoreOperator",
+                                "SellProduct${LocationId}SwipeRestoreOperatorList",
+                                "SellProduct${LocationId}RestoreOperatorNotFound"
+                            ]
+                        }
+                    },
+                    "option": [
+                        "${RegionPrefix}${LocationId}TargetOperator",
+                        "${RegionPrefix}${LocationId}RestoreOperator"
+                    ]
                 }
             ]
         },
