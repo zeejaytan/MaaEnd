@@ -285,10 +285,25 @@
                         },
                         "SellProduct${LocationId}InTargetOperatorList": {
                             "next": [
-                                "SellProduct${LocationId}AutoSelectTargetOperator",
-                                "SellProduct${LocationId}AutoTargetOperatorNotFoundAtBottom",
-                                "SellProduct${LocationId}AutoSwipeTargetOperatorList"
+                                "SellProduct${LocationId}SelectTargetOperator",
+                                "SellProduct${LocationId}TargetOperatorNotFound",
+                                "SellProduct${LocationId}SwipeTargetOperatorList"
                             ]
+                        },
+                        "SellProduct${LocationId}SelectTargetOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductSelectBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "target",
+                                "location": "${LocationId}",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
+                            }
                         },
                         "SellProduct${LocationId}AfterSellOperator": {
                             "next": [
@@ -302,10 +317,25 @@
                         },
                         "SellProduct${LocationId}InRestoreOperatorList": {
                             "next": [
-                                "SellProduct${LocationId}AutoSelectRestoreOperator",
-                                "SellProduct${LocationId}AutoRestoreOperatorNotFoundAtBottom",
-                                "SellProduct${LocationId}AutoSwipeRestoreOperatorList"
+                                "SellProduct${LocationId}SelectRestoreOperator",
+                                "SellProduct${LocationId}RestoreOperatorNotFoundAtBottom",
+                                "SellProduct${LocationId}SwipeRestoreOperatorList"
                             ]
+                        },
+                        "SellProduct${LocationId}SelectRestoreOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductSelectBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "restore",
+                                "location": "${LocationId}",
+                                "roi": [
+                                    164,
+                                    121,
+                                    700,
+                                    430
+                                ]
+                            }
                         }
                     }
                 },
@@ -332,8 +362,8 @@
                         "SellProduct${LocationId}InTargetOperatorList": {
                             "next": [
                                 "SellProduct${LocationId}SelectTargetOperator",
-                                "SellProduct${LocationId}SwipeTargetOperatorList",
-                                "SellProduct${LocationId}TargetOperatorNotFound"
+                                "SellProduct${LocationId}TargetOperatorNotFound",
+                                "SellProduct${LocationId}SwipeTargetOperatorList"
                             ]
                         },
                         "SellProduct${LocationId}AfterSellOperator": {
@@ -350,8 +380,8 @@
                         "SellProduct${LocationId}InRestoreOperatorList": {
                             "next": [
                                 "SellProduct${LocationId}SelectRestoreOperator",
-                                "SellProduct${LocationId}SwipeRestoreOperatorList",
-                                "SellProduct${LocationId}RestoreOperatorNotFound"
+                                "SellProduct${LocationId}RestoreOperatorNotFound",
+                                "SellProduct${LocationId}SwipeRestoreOperatorList"
                             ]
                         }
                     },

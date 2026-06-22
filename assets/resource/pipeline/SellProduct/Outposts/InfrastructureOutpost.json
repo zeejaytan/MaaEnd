@@ -123,94 +123,9 @@
         "post_delay": 0,
         "rate_limit": 0,
         "next": [
-            "SellProductInfrastructureOutpostAutoSelectTargetOperator",
-            "SellProductInfrastructureOutpostAutoTargetOperatorNotFoundAtBottom",
-            "SellProductInfrastructureOutpostAutoSwipeTargetOperatorList"
-        ]
-    },
-    "SellProductInfrastructureOutpostAutoSelectTargetOperator": {
-        "desc": "基建前站自动选择最优售卖用干员",
-        "recognition": "Custom",
-        "custom_recognition": "SellProductSelectBestOperator",
-        "custom_recognition_param": {
-            "mode": "cache",
-            "usage": "target",
-            "location": "InfrastructureOutpost",
-            "roi": [
-                164,
-                121,
-                700,
-                430
-            ]
-        },
-        "pre_delay": 0,
-        "action": "Click",
-        "post_delay": 0,
-        "rate_limit": 0,
-        "next": [
-            "SellProductInfrastructureOutpostConfirmTargetOperator"
-        ]
-    },
-    "SellProductInfrastructureOutpostAutoTargetOperatorNotFoundAtBottom": {
-        "desc": "基建前站自动选择售卖用干员已到底仍未找到，停止任务",
-        "recognition": "Custom",
-        "custom_recognition": "SellProductOperatorListBottom",
-        "custom_recognition_param": {
-            "mode": "cache",
-            "usage": "target",
-            "location": "InfrastructureOutpost",
-            "result": "not_found",
-            "roi": [
-                164,
-                121,
-                700,
-                430
-            ]
-        },
-        "pre_delay": 0,
-        "action": "StopTask",
-        "post_delay": 0,
-        "rate_limit": 0,
-        "focus": {
-            "Node.Recognition.Succeeded": "未在联络干员列表中找到可用的售卖用干员，请确认干员已持有或刷新自动干员数据"
-        }
-    },
-    "SellProductInfrastructureOutpostAutoSwipeTargetOperatorList": {
-        "desc": "基建前站自动选择售卖用干员时向下滑动",
-        "recognition": "And",
-        "all_of": [
-            "SellProductInOperatorLiaison"
-        ],
-        "pre_delay": 0,
-        "action": "Swipe",
-        "begin": [
-            620,
-            520
-        ],
-        "end": [
-            [
-                620,
-                285
-            ],
-            [
-                760,
-                285
-            ]
-        ],
-        "end_hold": 200,
-        "post_wait_freezes": {
-            "time": 150,
-            "target": [
-                170,
-                120,
-                690,
-                425
-            ]
-        },
-        "post_delay": 0,
-        "rate_limit": 0,
-        "next": [
-            "SellProductInfrastructureOutpostInTargetOperatorList"
+            "SellProductInfrastructureOutpostSelectTargetOperator",
+            "SellProductInfrastructureOutpostTargetOperatorNotFound",
+            "SellProductInfrastructureOutpostSwipeTargetOperatorList"
         ]
     },
     "SellProductInfrastructureOutpostSelectTargetOperator": {
@@ -304,7 +219,6 @@
     },
     "SellProductInfrastructureOutpostSwipeTargetOperatorList": {
         "desc": "基建前站在联络干员列表中向下滑动查找售卖用干员",
-        "max_hit": 8,
         "recognition": "And",
         "all_of": [
             "SellProductInOperatorLiaison"
@@ -342,11 +256,20 @@
         ]
     },
     "SellProductInfrastructureOutpostTargetOperatorNotFound": {
-        "desc": "基建前站未找到配置的售卖用干员，停止任务",
-        "recognition": "And",
-        "all_of": [
-            "SellProductInOperatorLiaison"
-        ],
+        "desc": "基建前站联络干员列表已到底，未找到配置的售卖用干员",
+        "recognition": "Custom",
+        "custom_recognition": "SellProductOperatorListBottom",
+        "custom_recognition_param": {
+            "mode": "cache",
+            "usage": "target",
+            "location": "InfrastructureOutpost",
+            "roi": [
+                164,
+                121,
+                700,
+                430
+            ]
+        },
         "pre_delay": 0,
         "action": "StopTask",
         "post_delay": 0,
@@ -413,36 +336,13 @@
         "post_delay": 0,
         "rate_limit": 0,
         "next": [
-            "SellProductInfrastructureOutpostAutoSelectRestoreOperator",
-            "SellProductInfrastructureOutpostAutoRestoreOperatorNotFoundAtBottom",
-            "SellProductInfrastructureOutpostAutoSwipeRestoreOperatorList"
+            "SellProductInfrastructureOutpostSelectRestoreOperator",
+            "SellProductInfrastructureOutpostRestoreOperatorNotFoundAtBottom",
+            "SellProductInfrastructureOutpostSwipeRestoreOperatorList"
         ]
     },
-    "SellProductInfrastructureOutpostAutoSelectRestoreOperator": {
-        "desc": "基建前站自动选择最优恢复干员",
-        "recognition": "Custom",
-        "custom_recognition": "SellProductSelectBestOperator",
-        "custom_recognition_param": {
-            "mode": "cache",
-            "usage": "restore",
-            "location": "InfrastructureOutpost",
-            "roi": [
-                164,
-                121,
-                700,
-                430
-            ]
-        },
-        "pre_delay": 0,
-        "action": "Click",
-        "post_delay": 0,
-        "rate_limit": 0,
-        "next": [
-            "SellProductInfrastructureOutpostConfirmRestoreOperator"
-        ]
-    },
-    "SellProductInfrastructureOutpostAutoRestoreOperatorNotFoundAtBottom": {
-        "desc": "基建前站自动选择恢复干员已到底仍未找到，关闭派驻列表并继续",
+    "SellProductInfrastructureOutpostRestoreOperatorNotFoundAtBottom": {
+        "desc": "基建前站联络干员列表已到底，未找到可用的恢复干员",
         "recognition": "Custom",
         "custom_recognition": "SellProductOperatorListBottom",
         "custom_recognition_param": {
@@ -461,45 +361,7 @@
         "post_delay": 0,
         "rate_limit": 0,
         "next": [
-            "SellProductInfrastructureOutpostAutoRestoreOperatorNotFound"
-        ]
-    },
-    "SellProductInfrastructureOutpostAutoSwipeRestoreOperatorList": {
-        "desc": "基建前站自动选择恢复干员时向下滑动",
-        "recognition": "And",
-        "all_of": [
-            "SellProductInOperatorLiaison"
-        ],
-        "pre_delay": 0,
-        "action": "Swipe",
-        "begin": [
-            620,
-            520
-        ],
-        "end": [
-            [
-                620,
-                285
-            ],
-            [
-                760,
-                285
-            ]
-        ],
-        "end_hold": 200,
-        "post_wait_freezes": {
-            "time": 150,
-            "target": [
-                170,
-                120,
-                690,
-                425
-            ]
-        },
-        "post_delay": 0,
-        "rate_limit": 0,
-        "next": [
-            "SellProductInfrastructureOutpostInRestoreOperatorList"
+            "SellProductInfrastructureOutpostCloseRestoreOperatorLiaisonAfterNotFound"
         ]
     },
     "SellProductInfrastructureOutpostSelectRestoreOperator": {
@@ -590,7 +452,6 @@
     },
     "SellProductInfrastructureOutpostSwipeRestoreOperatorList": {
         "desc": "基建前站在联络干员列表中向下滑动查找恢复干员",
-        "max_hit": 8,
         "recognition": "And",
         "all_of": [
             "SellProductInOperatorLiaison"
@@ -628,11 +489,20 @@
         ]
     },
     "SellProductInfrastructureOutpostRestoreOperatorNotFound": {
-        "desc": "基建前站未找到配置的恢复干员，停止任务",
-        "recognition": "And",
-        "all_of": [
-            "SellProductInOperatorLiaison"
-        ],
+        "desc": "基建前站联络干员列表已到底，未找到配置的恢复干员",
+        "recognition": "Custom",
+        "custom_recognition": "SellProductOperatorListBottom",
+        "custom_recognition_param": {
+            "mode": "cache",
+            "usage": "restore",
+            "location": "InfrastructureOutpost",
+            "roi": [
+                164,
+                121,
+                700,
+                430
+            ]
+        },
         "pre_delay": 0,
         "action": "StopTask",
         "post_delay": 0,
@@ -641,8 +511,8 @@
             "Node.Recognition.Succeeded": "未在联络干员列表中找到配置的恢复干员，请确认干员已持有或调整据点配置"
         }
     },
-    "SellProductInfrastructureOutpostAutoRestoreOperatorNotFound": {
-        "desc": "基建前站未找到自动恢复干员，关闭派驻列表并继续",
+    "SellProductInfrastructureOutpostCloseRestoreOperatorLiaisonAfterNotFound": {
+        "desc": "基建前站未找到可用的恢复干员，关闭派驻列表并继续",
         "recognition": "And",
         "all_of": [
             "SellProductInOperatorLiaison",

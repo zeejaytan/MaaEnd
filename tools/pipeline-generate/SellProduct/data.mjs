@@ -467,16 +467,13 @@ function buildOperatorRefreshModeCases(locations) {
         },
     };
     for (const loc of locations) {
-        refreshOverride[`SellProduct${loc.LocationId}AutoSelectTargetOperator`] = {
+        refreshOverride[`SellProduct${loc.LocationId}SelectTargetOperator`] = {
             custom_recognition_param: buildOperatorRecognitionParam("target", loc.LocationId, "refresh"),
         };
-        refreshOverride[`SellProduct${loc.LocationId}AutoSelectRestoreOperator`] = {
+        refreshOverride[`SellProduct${loc.LocationId}SelectRestoreOperator`] = {
             custom_recognition_param: buildOperatorRecognitionParam("restore", loc.LocationId, "refresh"),
         };
-        refreshOverride[`SellProduct${loc.LocationId}AutoTargetOperatorNotFoundAtBottom`] = {
-            custom_recognition_param: buildOperatorRecognitionParam("target", loc.LocationId, "refresh", "not_found"),
-        };
-        refreshOverride[`SellProduct${loc.LocationId}AutoRestoreOperatorNotFoundAtBottom`] = {
+        refreshOverride[`SellProduct${loc.LocationId}RestoreOperatorNotFoundAtBottom`] = {
             custom_recognition_param: buildOperatorRecognitionParam("restore", loc.LocationId, "refresh", "not_found"),
         };
     }
