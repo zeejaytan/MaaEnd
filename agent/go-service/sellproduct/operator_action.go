@@ -13,11 +13,14 @@ import (
 
 type SelectBestOperatorRecognition struct{}
 
+type CurrentBestOperatorRecognition struct{}
+
 type OperatorCacheReadyRecognition struct{}
 
 type OperatorListBottomRecognition struct{}
 
 var _ maa.CustomRecognitionRunner = (*SelectBestOperatorRecognition)(nil)
+var _ maa.CustomRecognitionRunner = (*CurrentBestOperatorRecognition)(nil)
 var _ maa.CustomRecognitionRunner = (*OperatorCacheReadyRecognition)(nil)
 var _ maa.CustomRecognitionRunner = (*OperatorListBottomRecognition)(nil)
 
@@ -60,6 +63,56 @@ func (r *SelectBestOperatorRecognition) Run(
 	}
 	if _, err := recordObservedOperators([]string{operatorCandidateCacheName(candidate)}); err != nil {
 		log.Error().Err(err).Str("component", selectBestOperatorRecognitionName).Msg("cache update failed")
+		return nil, false
+	}
+	if p.Mode == operatorCacheModeRefresh {
+		delete(operatorListScanStates, operatorListScanStateKey(p))
+	}
+	return &maa.CustomRecognitionResult{
+		Box:    match.box,
+		Detail: fmt.Sprintf("%s:%s", match.ocrText, candidate.Name),
+	}, true
+}
+
+func (r *CurrentBestOperatorRecognition) Run(
+	ctx *maa.Context,
+	arg *maa.CustomRecognitionArg,
+) (*maa.CustomRecognitionResult, bool) {
+	if arg == nil {
+		log.Error().Str("component", currentBestOperatorRecognitionName).Msg("got nil custom recognition arg")
+		return nil, false
+	}
+	p, err := parseOperatorActionParam(arg.CustomRecognitionParam)
+	if err != nil {
+		log.Error().Err(err).Str("component", currentBestOperatorRecognitionName).Msg("invalid params")
+		return nil, false
+	}
+	selectionParam, err := resolveOperatorSelectionParam(p)
+	if err != nil {
+		log.Error().Err(err).Str("component", currentBestOperatorRecognitionName).Msg("operator data unavailable")
+		return nil, false
+	}
+	owned, err := loadOwnedOperatorsForSelection(p)
+	if err != nil {
+		log.Error().Err(err).Str("component", currentBestOperatorRecognitionName).Msg("owned operators unavailable")
+		return nil, false
+	}
+	candidates := candidatesForCurrentSelection(selectionParam, owned)
+	if len(candidates) == 0 {
+		return nil, false
+	}
+
+	items, err := recognizeOperatorList(ctx, arg.Img, p.ROI)
+	if err != nil {
+		log.Error().Err(err).Str("component", currentBestOperatorRecognitionName).Msg("recognize current operator failed")
+		return nil, false
+	}
+	candidate, match, ok := findCurrentBestOperator(candidates, items)
+	if !ok {
+		return nil, false
+	}
+	if _, err := recordObservedOperators([]string{operatorCandidateCacheName(candidate)}); err != nil {
+		log.Error().Err(err).Str("component", currentBestOperatorRecognitionName).Msg("cache update failed")
 		return nil, false
 	}
 	if p.Mode == operatorCacheModeRefresh {
@@ -315,6 +368,18 @@ func findBestVisibleOperator(candidates []operatorCandidate, items []ocrItem) (o
 		}
 	}
 	return operatorCandidate{}, nil, false
+}
+
+func findCurrentBestOperator(candidates []operatorCandidate, items []ocrItem) (operatorCandidate, *matchResult, bool) {
+	if len(candidates) == 0 {
+		return operatorCandidate{}, nil, false
+	}
+	candidate := candidates[0]
+	match := findBestMatch(items, candidate.Expected)
+	if match == nil {
+		return operatorCandidate{}, nil, false
+	}
+	return candidate, match, true
 }
 
 func recognizeOperatorList(ctx *maa.Context, img image.Image, roi []int) ([]ocrItem, error) {

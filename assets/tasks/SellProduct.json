@@ -157,6 +157,19 @@
                                 ]
                             }
                         },
+                        "SellProductRefugeeCampCurrentTargetOperator": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "target",
+                                "location": "RefugeeCamp",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
+                        },
                         "SellProductRefugeeCampSelectTargetOperator": {
                             "custom_recognition_param": {
                                 "mode": "refresh",
@@ -167,6 +180,19 @@
                                     121,
                                     700,
                                     430
+                                ]
+                            }
+                        },
+                        "SellProductRefugeeCampCurrentRestoreOperator": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "restore",
+                                "location": "RefugeeCamp",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
                                 ]
                             }
                         },
@@ -197,6 +223,19 @@
                                 ]
                             }
                         },
+                        "SellProductInfrastructureOutpostCurrentTargetOperator": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "target",
+                                "location": "InfrastructureOutpost",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
+                        },
                         "SellProductInfrastructureOutpostSelectTargetOperator": {
                             "custom_recognition_param": {
                                 "mode": "refresh",
@@ -207,6 +246,19 @@
                                     121,
                                     700,
                                     430
+                                ]
+                            }
+                        },
+                        "SellProductInfrastructureOutpostCurrentRestoreOperator": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "restore",
+                                "location": "InfrastructureOutpost",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
                                 ]
                             }
                         },
@@ -237,6 +289,19 @@
                                 ]
                             }
                         },
+                        "SellProductReconstructionCommandCurrentTargetOperator": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "target",
+                                "location": "ReconstructionCommand",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
+                        },
                         "SellProductReconstructionCommandSelectTargetOperator": {
                             "custom_recognition_param": {
                                 "mode": "refresh",
@@ -247,6 +312,19 @@
                                     121,
                                     700,
                                     430
+                                ]
+                            }
+                        },
+                        "SellProductReconstructionCommandCurrentRestoreOperator": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "restore",
+                                "location": "ReconstructionCommand",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
                                 ]
                             }
                         },
@@ -277,6 +355,19 @@
                                 ]
                             }
                         },
+                        "SellProductSkyKingFlatsCurrentTargetOperator": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "target",
+                                "location": "SkyKingFlats",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
+                        },
                         "SellProductSkyKingFlatsSelectTargetOperator": {
                             "custom_recognition_param": {
                                 "mode": "refresh",
@@ -287,6 +378,19 @@
                                     121,
                                     700,
                                     430
+                                ]
+                            }
+                        },
+                        "SellProductSkyKingFlatsCurrentRestoreOperator": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "restore",
+                                "location": "SkyKingFlats",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
                                 ]
                             }
                         },
@@ -317,6 +421,19 @@
                                 ]
                             }
                         },
+                        "SellProductCardiacRemediationStationCurrentTargetOperator": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "target",
+                                "location": "CardiacRemediationStation",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
+                        },
                         "SellProductCardiacRemediationStationSelectTargetOperator": {
                             "custom_recognition_param": {
                                 "mode": "refresh",
@@ -327,6 +444,19 @@
                                     121,
                                     700,
                                     430
+                                ]
+                            }
+                        },
+                        "SellProductCardiacRemediationStationCurrentRestoreOperator": {
+                            "custom_recognition_param": {
+                                "mode": "refresh",
+                                "usage": "restore",
+                                "location": "CardiacRemediationStation",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
                                 ]
                             }
                         },
@@ -514,8 +644,24 @@
                         },
                         "SellProductRefugeeCampBeforeSellOperator": {
                             "next": [
+                                "SellProductRefugeeCampCurrentTargetOperator",
                                 "SellProductRefugeeCampOpenTargetOperatorList"
                             ]
+                        },
+                        "SellProductRefugeeCampCurrentTargetOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "target",
+                                "location": "RefugeeCamp",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProductRefugeeCampOpenTargetOperatorList": {
                             "next": [
@@ -546,8 +692,24 @@
                         },
                         "SellProductRefugeeCampAfterSellOperator": {
                             "next": [
+                                "SellProductRefugeeCampCurrentRestoreOperator",
                                 "SellProductRefugeeCampOpenRestoreOperatorList"
                             ]
+                        },
+                        "SellProductRefugeeCampCurrentRestoreOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "restore",
+                                "location": "RefugeeCamp",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProductRefugeeCampOpenRestoreOperatorList": {
                             "next": [
@@ -2398,8 +2560,24 @@
                         },
                         "SellProductInfrastructureOutpostBeforeSellOperator": {
                             "next": [
+                                "SellProductInfrastructureOutpostCurrentTargetOperator",
                                 "SellProductInfrastructureOutpostOpenTargetOperatorList"
                             ]
+                        },
+                        "SellProductInfrastructureOutpostCurrentTargetOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "target",
+                                "location": "InfrastructureOutpost",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProductInfrastructureOutpostOpenTargetOperatorList": {
                             "next": [
@@ -2430,8 +2608,24 @@
                         },
                         "SellProductInfrastructureOutpostAfterSellOperator": {
                             "next": [
+                                "SellProductInfrastructureOutpostCurrentRestoreOperator",
                                 "SellProductInfrastructureOutpostOpenRestoreOperatorList"
                             ]
+                        },
+                        "SellProductInfrastructureOutpostCurrentRestoreOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "restore",
+                                "location": "InfrastructureOutpost",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProductInfrastructureOutpostOpenRestoreOperatorList": {
                             "next": [
@@ -4145,8 +4339,24 @@
                         },
                         "SellProductReconstructionCommandBeforeSellOperator": {
                             "next": [
+                                "SellProductReconstructionCommandCurrentTargetOperator",
                                 "SellProductReconstructionCommandOpenTargetOperatorList"
                             ]
+                        },
+                        "SellProductReconstructionCommandCurrentTargetOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "target",
+                                "location": "ReconstructionCommand",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProductReconstructionCommandOpenTargetOperatorList": {
                             "next": [
@@ -4177,8 +4387,24 @@
                         },
                         "SellProductReconstructionCommandAfterSellOperator": {
                             "next": [
+                                "SellProductReconstructionCommandCurrentRestoreOperator",
                                 "SellProductReconstructionCommandOpenRestoreOperatorList"
                             ]
+                        },
+                        "SellProductReconstructionCommandCurrentRestoreOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "restore",
+                                "location": "ReconstructionCommand",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProductReconstructionCommandOpenRestoreOperatorList": {
                             "next": [
@@ -5743,8 +5969,24 @@
                         },
                         "SellProductSkyKingFlatsBeforeSellOperator": {
                             "next": [
+                                "SellProductSkyKingFlatsCurrentTargetOperator",
                                 "SellProductSkyKingFlatsOpenTargetOperatorList"
                             ]
+                        },
+                        "SellProductSkyKingFlatsCurrentTargetOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "target",
+                                "location": "SkyKingFlats",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProductSkyKingFlatsOpenTargetOperatorList": {
                             "next": [
@@ -5775,8 +6017,24 @@
                         },
                         "SellProductSkyKingFlatsAfterSellOperator": {
                             "next": [
+                                "SellProductSkyKingFlatsCurrentRestoreOperator",
                                 "SellProductSkyKingFlatsOpenRestoreOperatorList"
                             ]
+                        },
+                        "SellProductSkyKingFlatsCurrentRestoreOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "restore",
+                                "location": "SkyKingFlats",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProductSkyKingFlatsOpenRestoreOperatorList": {
                             "next": [
@@ -7545,8 +7803,24 @@
                         },
                         "SellProductCardiacRemediationStationBeforeSellOperator": {
                             "next": [
+                                "SellProductCardiacRemediationStationCurrentTargetOperator",
                                 "SellProductCardiacRemediationStationOpenTargetOperatorList"
                             ]
+                        },
+                        "SellProductCardiacRemediationStationCurrentTargetOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "target",
+                                "location": "CardiacRemediationStation",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProductCardiacRemediationStationOpenTargetOperatorList": {
                             "next": [
@@ -7577,8 +7851,24 @@
                         },
                         "SellProductCardiacRemediationStationAfterSellOperator": {
                             "next": [
+                                "SellProductCardiacRemediationStationCurrentRestoreOperator",
                                 "SellProductCardiacRemediationStationOpenRestoreOperatorList"
                             ]
+                        },
+                        "SellProductCardiacRemediationStationCurrentRestoreOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "restore",
+                                "location": "CardiacRemediationStation",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProductCardiacRemediationStationOpenRestoreOperatorList": {
                             "next": [

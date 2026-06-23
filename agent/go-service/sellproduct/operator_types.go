@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	selectBestOperatorRecognitionName = "SellProductSelectBestOperator"
-	operatorCacheReadyRecognitionName = "SellProductOperatorCacheReady"
-	operatorListBottomRecognitionName = "SellProductOperatorListBottom"
+	selectBestOperatorRecognitionName  = "SellProductSelectBestOperator"
+	currentBestOperatorRecognitionName = "SellProductCurrentBestOperator"
+	operatorCacheReadyRecognitionName  = "SellProductOperatorCacheReady"
+	operatorListBottomRecognitionName  = "SellProductOperatorListBottom"
 
 	operatorCacheModeCache   = "cache"
 	operatorCacheModeRefresh = "refresh"

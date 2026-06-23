@@ -467,8 +467,30 @@ function buildOperatorRefreshModeCases(locations) {
         },
     };
     for (const loc of locations) {
+        refreshOverride[`SellProduct${loc.LocationId}CurrentTargetOperator`] = {
+            custom_recognition_param: {
+                ...buildOperatorRecognitionParam("target", loc.LocationId, "refresh"),
+                roi: [
+                    268,
+                    568,
+                    190,
+                    35,
+                ],
+            },
+        };
         refreshOverride[`SellProduct${loc.LocationId}SelectTargetOperator`] = {
             custom_recognition_param: buildOperatorRecognitionParam("target", loc.LocationId, "refresh"),
+        };
+        refreshOverride[`SellProduct${loc.LocationId}CurrentRestoreOperator`] = {
+            custom_recognition_param: {
+                ...buildOperatorRecognitionParam("restore", loc.LocationId, "refresh"),
+                roi: [
+                    268,
+                    568,
+                    190,
+                    35,
+                ],
+            },
         };
         refreshOverride[`SellProduct${loc.LocationId}SelectRestoreOperator`] = {
             custom_recognition_param: buildOperatorRecognitionParam("restore", loc.LocationId, "refresh"),

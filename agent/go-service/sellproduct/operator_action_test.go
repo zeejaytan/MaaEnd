@@ -67,6 +67,33 @@ func TestFindBestVisibleOperatorUsesCandidatePriority(t *testing.T) {
 	}
 }
 
+func TestFindCurrentBestOperatorRequiresTopPriorityCandidate(t *testing.T) {
+	candidates := []operatorCandidate{
+		{Name: "Best", CacheName: "最优", Expected: []string{"最优"}, Priority: 0},
+		{Name: "Fallback", CacheName: "备选", Expected: []string{"备选"}, Priority: 1},
+	}
+	fallbackItems := []ocrItem{
+		{text: "备选", box: maa.Rect{100, 100, 80, 20}},
+	}
+	if _, _, ok := findCurrentBestOperator(candidates, fallbackItems); ok {
+		t.Fatal("fallback candidate should not be treated as the current best operator")
+	}
+
+	bestItems := []ocrItem{
+		{text: "最优", box: maa.Rect{100, 100, 80, 20}},
+	}
+	candidate, match, ok := findCurrentBestOperator(candidates, bestItems)
+	if !ok {
+		t.Fatal("expected current best operator match")
+	}
+	if candidate.Name != "Best" {
+		t.Fatalf("candidate = %q, want Best", candidate.Name)
+	}
+	if match.ocrText != "最优" {
+		t.Fatalf("ocr text = %q, want 最优", match.ocrText)
+	}
+}
+
 func TestAllOperatorScanCandidatesIncludesTargetAndRestoreCandidates(t *testing.T) {
 	data := &operatorSelectionData{
 		TargetCandidates: map[string][]operatorCandidate{

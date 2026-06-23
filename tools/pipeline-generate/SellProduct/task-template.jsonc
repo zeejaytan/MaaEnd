@@ -275,8 +275,24 @@
                         },
                         "SellProduct${LocationId}BeforeSellOperator": {
                             "next": [
+                                "SellProduct${LocationId}CurrentTargetOperator",
                                 "SellProduct${LocationId}OpenTargetOperatorList"
                             ]
+                        },
+                        "SellProduct${LocationId}CurrentTargetOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "target",
+                                "location": "${LocationId}",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProduct${LocationId}OpenTargetOperatorList": {
                             "next": [
@@ -307,8 +323,24 @@
                         },
                         "SellProduct${LocationId}AfterSellOperator": {
                             "next": [
+                                "SellProduct${LocationId}CurrentRestoreOperator",
                                 "SellProduct${LocationId}OpenRestoreOperatorList"
                             ]
+                        },
+                        "SellProduct${LocationId}CurrentRestoreOperator": {
+                            "recognition": "Custom",
+                            "custom_recognition": "SellProductCurrentBestOperator",
+                            "custom_recognition_param": {
+                                "mode": "cache",
+                                "usage": "restore",
+                                "location": "${LocationId}",
+                                "roi": [
+                                    268,
+                                    568,
+                                    190,
+                                    35
+                                ]
+                            }
                         },
                         "SellProduct${LocationId}OpenRestoreOperatorList": {
                             "next": [
