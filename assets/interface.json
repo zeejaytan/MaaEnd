@@ -55,13 +55,10 @@
             "name": "GFN-App",
             "label": "$controller.GFN-App.label",
             "description": "$controller.GFN-App.description",
-            "type": "Win32",
-            "win32": {
-                "class_regex": "CEFCLIENT",
-                "window_regex": "Endfield.*on GeForce NOW",
-                "screencap": "PrintWindow",
-                "mouse": "Seize",
-                "keyboard": "Seize"
+            "type": "Cloud",
+            "cloud": {
+                "provider": "geforce_now",
+                "game_title": "Endfield"
             },
             "attach_resource_path": [
                 "./resource_gfn"
