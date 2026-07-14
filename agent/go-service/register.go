@@ -49,6 +49,9 @@ func registerAll() {
 	resource.EnsureResourcePathSink()
 
 	// Pre-Check Custom
+	// GFN-App is a Win32 controller: aspectratio enforces the shared 16:9 +
+	// >=1280x720 contract for it like any other Win32 controller, so no
+	// GFN-specific forced resize is needed.
 	aspectratio.Register()
 	hdrcheck.Register()
 	processcheck.Register()
