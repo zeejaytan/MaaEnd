@@ -35,7 +35,6 @@ import (
 	"github.com/MaaXYZ/MaaEnd/agent/go-service/sellproduct"
 	"github.com/MaaXYZ/MaaEnd/agent/go-service/taskersink/aspectratio"
 	"github.com/MaaXYZ/MaaEnd/agent/go-service/taskersink/cursormove"
-	"github.com/MaaXYZ/MaaEnd/agent/go-service/taskersink/gfnwindow"
 	"github.com/MaaXYZ/MaaEnd/agent/go-service/taskersink/hdrcheck"
 	"github.com/MaaXYZ/MaaEnd/agent/go-service/taskersink/processcheck"
 	"github.com/MaaXYZ/MaaEnd/agent/go-service/trialofswordmancy"
@@ -49,9 +48,9 @@ func registerAll() {
 	resource.EnsureResourcePathSink()
 
 	// Pre-Check Custom
-	// gfnwindow must run before aspectratio: it resizes the GFN stream window
-	// to the 720p baseline so the aspect ratio gate passes afterwards.
-	gfnwindow.Register()
+	// GFN-App is a Win32 controller: aspectratio enforces the shared 16:9 +
+	// >=1280x720 contract for it like any other Win32 controller, so no
+	// GFN-specific forced resize is needed.
 	aspectratio.Register()
 	hdrcheck.Register()
 	processcheck.Register()

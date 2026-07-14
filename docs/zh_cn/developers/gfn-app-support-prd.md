@@ -4,6 +4,11 @@
 > 本文档为产品需求文档（PRD），描述需求与设计约束，不包含最终实现。
 > 状态：**草案**。涉及"待实测验证"的条目需在实现后于真实 Windows + GeForce NOW 环境确认。
 
+> [!IMPORTANT]
+> **设计变更（依上游 PR #4178 评审反馈 @ocsin1）**：原设计新增 `gfnwindow` taskersink 主动把 GFN 窗口缩放到精确 1280x720（±2px 容差）。评审指出 MaaEnd 的 Win32 分辨率预检**只要求 16:9 且不主动缩放、不强制 720p**，专用强制缩放与该契约相悖，建议在框架侧解决。
+> 现已改为 **GFN-App 直接复用 Win32 分辨率契约**：作为 `type=Win32` 控制器天然走 `taskersink/aspectratio`（16:9 且 ≥1280x720，MaaFramework 对截图缩放），删除 `gfnwindow` 缩放 sink 及其 ±2px 容差逻辑。
+> 对比佐证：姊妹项目 MaaNTE 的 `PinkPawHeist` **硬性要求精确 1280x720**（`resize_client_area(tolerance=2)`，配置项标注"关闭自动缩放时须自行保证 1280x720，否则识图失败"），因其 pipeline ROI 按固定 720p 编写、不走缩放；MaaEnd pipeline 走 MaaFramework 缩放，任意 16:9 ≥720p 均可，故不继承 MaaNTE 的精确 720p 约束。
+
 ## 1. 背景与目标
 
 ### 1.1 背景
@@ -26,7 +31,7 @@ MaaEnd 目前支持的控制器形态：
 ### 1.2 目标
 
 - 用户使用 GFN 原生客户端游玩终末地时，MaaEnd 能自动找到游戏窗口并正常连接控制器。
-- Go agent 在 GFN 场景下自动把游戏窗口客户区调整为 1280x720 基准分辨率，调整失败时优雅降级并给出明确的用户引导。
+- GFN-App 作为 Win32 控制器复用现有 `aspectratio` 分辨率预检（16:9 且 ≥1280x720），不做 GFN 专用窗口缩放；不达标时按标准 Win32 流程警告并引导用户在 GFN 客户端调整串流分辨率。
 - 对 GFN 场景的能力边界（仅前台、串流分辨率锁定、依赖本地安装的任务不可用）给出明确的用户提示与文档说明。
 
 ### 1.3 非目标
@@ -64,8 +69,8 @@ GFN 窗口（类 `CEFCLIENT`，标题含 `on GeForce NOW`）两个正则均不�
 
 | 失效点                     | 说明                                                                                                               |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| 控制器正则不命中           | `class_regex` / `window_regex` 均针对本地 Unity 窗口                                                               |
-| 无窗口缩放能力             | GFN 窗口非 720p 时，aspectratio 只会强停任务，无自动修正手段                                                       |
+| 控制器正则不命中           | `class_regex` / `window_regex` 均针对本地 Unity 窗口（由 FR1 修复）                                                |
+| 分辨率门禁（非缺陷）       | GFN 窗口按 Win32 契约走 `aspectratio`：16:9 且 ≥1280x720 即通过，否则警告强停并引导用户调整 GFN 串流分辨率（不主动缩放） |
 | Alt+Enter 复检依赖本地文件 | GFN 场景本机无游戏安装，`gamesetting.GetVideoFullScreen()` 读取失败 → Alt+Enter 路径自然跳过，属预期降级，无需修改 |
 
 ## 3. 目标窗口特征
@@ -100,19 +105,15 @@ GFN 窗口（类 `CEFCLIENT`，标题含 `on GeForce NOW`）两个正则均不�
 - 键盘输入必须能透传到 GFN 串流（客户端把按键转发到云端主机），WASD 等长按键位为验证重点。
 - 配套新增 i18n 键 `controller.GFN-App.label` / `controller.GFN-App.description`，同步 5 个 locale 文件（`assets/locales/interface/{zh_cn,zh_tw,en_us,ja_jp,ko_kr}.json`）。
 
-### FR2 — Go agent GFN 模式检测与窗口自动缩放（`agent/go-service/taskersink/gfnwindow`）
+### FR2 — GFN-App 复用 Win32 分辨率契约（不新增专用缩放 sink）
 
-新增 taskersink 包 `gfnwindow`，在任务启动事件上执行：
+依设计变更（见文首 IMPORTANT），**不新增** `gfnwindow` taskersink，也不做 GFN 专用窗口缩放。GFN-App 作为 `type=Win32` 控制器天然走既有预检链：
 
-- **检测**：`pienv.ControllerName() == "GFN-App"` 即 GFN 模式，无需进程/窗口枚举 —— 控制器连接时 MaaFramework 已完成选窗，HWND 从 controller info（`hwnd` 字段）直接获取。检测与缩放结果输出 INFO 级结构化日志（hwnd、窗口类、before/after 尺寸）。
-- **缩放**：客户区非 1280x720（±2px 容差）时，按实测窗口/客户区矩形差值计算边框尺寸（无边框窗口差值为 0，等价于 `AdjustWindowRectEx` 且无需读取样式位），经 `SetWindowPos` 把客户区调整为 1280x720 并贴到工作区（`rcWork`，排除任务栏）右下角。**不强制 `WS_CAPTION`**，保持 GFN 流窗口无边框形态（MaaNTE 实测 GFN 窗口接受标准缩放）。
-- **贴靠右下角**：即使客户区已是 1280x720（本次未触发缩放），也会单独执行一次仅移动（`SWP_NOSIZE`）的贴靠，确保窗口停留在右下角，与 MaaNTE `97cc62e` 的 `bottom_right` 锚点行为一致；贴靠失败仅记录 DEBUG 日志，不影响任务继续执行。
-- **降级**：缩放失败时任务**不中断**，输出 WARNING 日志与用户可见提示（maafocus），引导用户在 GFN 客户端设置中将串流分辨率固定为 1280x720。
-- **串流分辨率锁定提示**：缩放成功后仍提示 —— 若游戏会话在调整前已开始串流，云端仍按原分辨率渲染，识别可能失败；需在 GFN 设置固定 720p 串流后重启会话，或保持窗口 1280x720 时再启动游戏。
-- **注册顺序**：在 `registerAll()` 中先于 `aspectratio.Register()` 注册，保证缩放先于分辨率强校验执行。
-- **缓存刷新**：缩放成功后必须触发一次 `PostScreencap` 刷新控制器缓存分辨率，否则后续 `aspectratio` 读到缩放前的旧值会误停任务（实测踩坑）。
-- **平台守卫**：Win32 逻辑走 `//go:build windows` 构建标签，非 Windows 平台空实现（参照 `taskersink/hdrcheck` 的 `hdr_windows.go` / `hdr_other.go` 结构）。
-- **公共化**：controller info → HWND 解析逻辑提炼为 `pkg/control` 公共函数，`taskersink/aspectratio` 改为复用，消除与 `altenter_windows.go` 的重复。
+- **分辨率门禁**：完全交由 `taskersink/aspectratio`。非 ADB（含 GFN-App）路径要求 **16:9 宽高比（±2%）且 ≥1280x720**，由 MaaFramework 对截图缩放至 pipeline 基准，从不主动缩放窗口、不强制精确 720p。GFN 窗口不达标时按标准 Win32 流程警告并强停，用户体验与其他 Win32 控制器一致。
+- **无 GFN 特判**：`registerAll()` 不再注册 `gfnwindow`，不做控制器名判定；不引入 ±2px 容差、右下角贴靠、`PostScreencap` 缓存刷新等 GFN 专用逻辑。
+- **Alt+Enter 降级**：`aspectratio` 的全屏→窗口化复检因 GFN 无本地游戏配置文件（`gamesetting.GetVideoFullScreen()` 读取失败）自然跳过，属预期降级，无需修改。
+- **HWND 公共化保留**：controller info → HWND 解析已提炼为 `pkg/control` 公共函数供 `taskersink/aspectratio`（`altenter_windows.go`）复用；该重构独立于本次决策，予以保留。
+- **用户引导**：GFN 串流分辨率需为 16:9 且 ≥720p 的建议，通过标准 `aspectratio` 警告文案与用户文档说明，不再由专用 sink 弹出 720p 提示。
 
 ### FR3 — 任务控制器解锁（`assets/tasks/**/*.json`）
 
@@ -130,8 +131,7 @@ GFN-App 与 `Win32-Front` 模式一致（前台 + Seize），原则上所有支�
 
 | 预检                        | GFN 场景行为                                                                                                                                      |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `gfnwindow`（本期新增）     | 检测 GFN 模式 → 自动缩放 → 提示；非 GFN 控制器下零开销直接返回                                                                                    |
-| `aspectratio`               | 在 `gfnwindow` 之后执行；缩放成功则直接通过；缩放失败则按现状警告并强停（兜底）。Alt+Enter 路径因读不到本地配置文件自然跳过，属预期降级，无需修改 |
+| `aspectratio`               | GFN-App 走非 ADB 路径：16:9 且 ≥1280x720 即通过，否则警告强停并引导用户调整 GFN 串流分辨率。Alt+Enter 路径因读不到本地配置文件自然跳过，属预期降级，无需修改 |
 | `hdrcheck` / `processcheck` | 行为不变（检查的是本机环境，与 GFN 无冲突）                                                                                                       |
 
 ## 5. 非功能需求
@@ -148,7 +148,7 @@ GFN-App 与 `Win32-Front` 模式一致（前台 + Seize），原则上所有支�
 | R1  | ~~终末地在 GFN 的实际窗口标题未确认~~ **已关闭**：实测确认标题为 `Arknights: Endfield on GeForce NOW`，正则 `Endfield.*on GeForce NOW` 命中                                                                                           | —                                        | 保持匹配语言无关片段（游戏英文名 + `GeForce NOW`）；如遇多语言客户端标题差异再收集样本                                                                  |
 | R2  | CEF GPU 合成窗口对后台注入不可靠，GFN 用户只能前台运行                                                                                                                                                                                | 无法使用后台任务                         | 控制器即声明为前台模式；locale 描述与文档中声明该限制                                                                                                   |
 | R3  | ~~压缩伪影可能拉低识别匹配分~~ **已实测定性**：720p 串流下 TemplateMatch 正常（实测 0.95+），但 1~2 单位宽的精确 ColorMatch 全部失配（品牌黄 hue 本地 28-29 → 串流实测 26-31，连通像素 47/3000），触发 SceneManager"颜色识别失败"误报 | ColorMatch 校准门禁在 GFN 下必然中止任务 | 已新增 `resource_gfn` 覆盖资源（随 GFN-App 控制器 `attach_resource_path` 加载），放宽按钮底色与加载校准色块的颜色容差；后续发现同类节点按此模式补充覆盖 |
-| R4  | 串流渲染分辨率在会话建立时锁定，本地缩放窗口不改变云端渲染                                                                                                                                                                            | 会话中途缩放后识别仍失败                 | FR2 的串流分辨率锁定提示；引导用户在 GFN 设置固定 720p 串流并重启会话                                                                                   |
+| R4  | 串流渲染分辨率在会话建立时锁定；本地窗口非 16:9 或低于 720p 时识别失败                                                                                                                                                                | 分辨率不达标则任务被 `aspectratio` 强停 | 不主动缩放（见设计变更）；由 `aspectratio` 门禁 + 用户文档引导用户在 GFN 客户端将串流分辨率设为 16:9 且 ≥720p（推荐 1280x720）后重启会话                 |
 | R5  | `CEFCLIENT` 类名可能随 GFN 客户端版本变化（历史上出现过 `CEF-OSC-WIDGET`）                                                                                                                                                            | 客户端更新后控制器失效                   | 探测日志保留窗口类字段，便于未来核对；PRD 记录取证方法                                                                                                  |
 | R6  | GFN 自身的排队、闲置踢出、会话到期画面                                                                                                                                                                                                | 任务流程外状态，Pipeline 无法恢复        | 非目标（§1.3）；提示用户保持会话活跃，长任务失败时日志可定位                                                                                            |
 | R7  | `PrintWindow` 对 GFN 流窗口截图可用性未在终末地场景复测                                                                                                                                                                               | 黑屏帧则识别全部失败                     | MaaNTE 同客户端实测可用；若失效回退 `ScreenDC`（要求窗口前台不遮挡，与 Seize 前提一致）                                                                 |
@@ -156,8 +156,8 @@ GFN-App 与 `Win32-Front` 模式一致（前台 + Seize），原则上所有支�
 ## 7. 验收标准
 
 - [ ] `GFN-App` 控制器在 MXU 控制器列表中可见、可选、可连接。（待 Windows 实测）
-- [ ] 控制器连接成功，截图分辨率为 1280x720，鼠标/键盘输入在串流中生效（含 WASD 长按）。（待 Windows 实测）
-- [ ] GFN 窗口客户区非 720p 时，任务启动自动缩放到 1280x720；缩放失败时任务不中断且输出引导提示。（待 Windows 实测）
+- [ ] 控制器连接成功，串流分辨率为 16:9 且 ≥720p 时截图正常，鼠标/键盘输入在串流中生效（含 WASD 长按）。（待 Windows 实测）
+- [ ] GFN 窗口非 16:9 或低于 1280x720 时，`aspectratio` 按标准 Win32 流程警告并强停并输出引导提示（不主动缩放）。（待 Windows 实测）
 - [ ] 非 GFN 控制器（Win32-Front / ADB / PlayCover / Wlroots）行为回归一致，无新增日志噪音。
 - [ ] 代表性任务（如 `DailyRewards`、`PuzzleSolver`）在 GFN 下端到端跑通。（待 Windows 实测）
 - [ ] 5 个 interface locale 与 5 个 go-service locale 的新增键完整同步，`pnpm format:check` / `pnpm check` / `pnpm test` 通过。
